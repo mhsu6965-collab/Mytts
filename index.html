@@ -1,390 +1,533 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <title>Myanmar TTS</title>
+<title>Myanmar TTS</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    body {
-      margin: 0;
-      padding: 20px;
-      background: #f5f5f5;
-      font-family: Arial, "Noto Sans Myanmar", sans-serif;
-    }
+body{
+  margin:0;
+  padding:20px;
+  background:#f4f4f4;
+  font-family:Arial,"Noto Sans Myanmar",sans-serif;
+}
 
-    .box {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-    }
+.box{
+  max-width:700px;
+  margin:auto;
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 3px 15px #0002;
+}
 
-    h1 {
-      text-align: center;
-      margin-top: 0;
-    }
+h1{
+  text-align:center;
+}
 
-    textarea {
-      width: 100%;
-      height: 220px;
-      padding: 15px;
-      font-size: 18px;
-      line-height: 1.7;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      resize: vertical;
-    }
+textarea{
+  width:100%;
+  height:220px;
+  padding:15px;
+  font-size:18px;
+  line-height:1.7;
+  border:1px solid #ccc;
+  border-radius:10px;
+  resize:vertical;
+}
 
-    .voices {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
+.count{
+  text-align:right;
+  color:#777;
+  margin-top:5px;
+}
 
-    .voice {
-      flex: 1;
-      padding: 13px;
-      border: 2px solid #ccc;
-      background: white;
-      border-radius: 10px;
-      font-size: 16px;
-    }
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
 
-    .voice.active {
-      border-color: #222;
-      background: #eee;
-    }
+.voice{
+  flex:1;
+  padding:13px;
+  border:2px solid #ccc;
+  background:white;
+  border-radius:10px;
+  font-size:16px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 15px;
-      border: 0;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-    }
+.voice.active{
+  border-color:#222;
+  background:#eee;
+}
 
-    #generate {
-      background: #222;
-      color: white;
-    }
+.control{
+  margin-top:20px;
+}
 
-    #generate:disabled {
-      opacity: 0.6;
-    }
+.control label{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  margin-bottom:8px;
+}
 
-    #download {
-      background: #e8e8e8;
-      display: none;
-    }
+input[type="range"]{
+  width:100%;
+}
 
-    #status {
-      text-align: center;
-      margin-top: 15px;
-      min-height: 25px;
-    }
+.value{
+  text-align:center;
+  font-size:18px;
+  margin-top:5px;
+}
 
-    audio {
-      width: 100%;
-      margin-top: 15px;
-      display: none;
-    }
+#generate{
+  width:100%;
+  padding:15px;
+  margin-top:20px;
+  border:0;
+  border-radius:10px;
+  background:#222;
+  color:white;
+  font-size:18px;
+}
 
-    .count {
-      text-align: right;
-      color: #777;
-      margin-top: 5px;
-    }
-  </style>
+#generate:disabled{
+  opacity:.6;
+}
+
+#download{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:0;
+  border-radius:10px;
+  background:#e5e5e5;
+  font-size:17px;
+  display:none;
+}
+
+#status{
+  text-align:center;
+  margin-top:15px;
+  min-height:25px;
+}
+
+audio{
+  width:100%;
+  margin-top:15px;
+  display:none;
+}
+</style>
 </head>
 
 <body>
 
 <div class="box">
 
-  <h1>🇲🇲 Myanmar TTS</h1>
+<h1>🇲🇲 Myanmar TTS</h1>
 
-  <textarea
-    id="text"
-    maxlength="5000"
-    placeholder="မြန်မာစာကို ဒီမှာ ရိုက်ထည့်ပါ..."
-  ></textarea>
+<textarea
+  id="text"
+  maxlength="5000"
+  placeholder="မြန်မာစာကို ဒီမှာ ရိုက်ထည့်ပါ..."
+></textarea>
 
-  <div class="count">
-    <span id="count">0</span> / 5000
-  </div>
+<div class="count">
+  <span id="count">0</span> / 5000
+</div>
 
-  <div class="voices">
 
-    <button
-      type="button"
-      class="voice active"
-      id="thiha"
-      onclick="selectVoice('thiha')">
-      👨 Thiha
-    </button>
+<!-- VOICE -->
 
-    <button
-      type="button"
-      class="voice"
-      id="nilar"
-      onclick="selectVoice('nilar')">
-      👩 Nilar
-    </button>
+<div class="row">
 
-  </div>
+<button
+  class="voice active"
+  id="thiha"
+  onclick="selectVoice('thiha')"
+>
+👨 Thiha
+</button>
 
-  <button id="generate" onclick="generateTTS()">
-    🔊 Generate Voice
-  </button>
+<button
+  class="voice"
+  id="nilar"
+  onclick="selectVoice('nilar')"
+>
+👩 Nilar
+</button>
 
-  <div id="status"></div>
+</div>
 
-  <audio id="audio" controls></audio>
 
-  <button id="download" onclick="downloadAudio()">
-    ⬇️ Download MP3
-  </button>
+<!-- SPEED -->
+
+<div class="control">
+
+<label>
+<span>🎚️ Speed</span>
+<span id="speedValue">0%</span>
+</label>
+
+<input
+  type="range"
+  id="speed"
+  min="-100"
+  max="100"
+  step="1"
+  value="0"
+>
+
+<div class="value">
+  Speed: <span id="speedText">0%</span>
+</div>
+
+</div>
+
+
+<!-- PITCH -->
+
+<div class="control">
+
+<label>
+<span>🎵 Pitch</span>
+<span id="pitchValue">0%</span>
+</label>
+
+<input
+  type="range"
+  id="pitch"
+  min="-100"
+  max="100"
+  step="1"
+  value="0"
+>
+
+<div class="value">
+  Pitch: <span id="pitchText">0%</span>
+</div>
+
+</div>
+
+
+<!-- GENERATE -->
+
+<button
+  id="generate"
+  onclick="generateTTS()"
+>
+🔊 Generate Voice
+</button>
+
+
+<div id="status"></div>
+
+
+<audio
+  id="audio"
+  controls
+></audio>
+
+
+<button
+  id="download"
+  onclick="downloadMP3()"
+>
+⬇️ Download MP3
+</button>
 
 </div>
 
 
 <script>
 
-  // ==========================================
-  // YOUR CLOUDFLARE WORKER
-  // ==========================================
+const WORKER_URL =
+"https://myanmar-tts.thetphyo77790.workers.dev/tts";
 
-  const WORKER_URL =
-    "https://myanmar-tts.thetphyo77790.workers.dev/tts";
+let selectedVoice = "thiha";
 
-
-  let selectedVoice = "thiha";
-  let audioBlob = null;
+let audioBlob = null;
 
 
-  // ==========================================
-  // VOICE SELECT
-  // ==========================================
+/* VOICE */
 
-  function selectVoice(voice) {
+function selectVoice(voice){
 
-    selectedVoice = voice;
-
-    document
-      .getElementById("thiha")
-      .classList.remove("active");
-
-    document
-      .getElementById("nilar")
-      .classList.remove("active");
-
-    document
-      .getElementById(voice)
-      .classList.add("active");
-  }
-
-
-  // ==========================================
-  // CHARACTER COUNT
-  // ==========================================
+  selectedVoice = voice;
 
   document
-    .getElementById("text")
-    .addEventListener("input", function() {
+    .getElementById("thiha")
+    .classList.remove("active");
 
-      document.getElementById("count").textContent =
-        this.value.length;
+  document
+    .getElementById("nilar")
+    .classList.remove("active");
 
-    });
-
-
-  // ==========================================
-  // GENERATE TTS
-  // ==========================================
-
-  async function generateTTS() {
-
-    const text =
-      document.getElementById("text").value.trim();
-
-    const button =
-      document.getElementById("generate");
-
-    const status =
-      document.getElementById("status");
-
-    const audio =
-      document.getElementById("audio");
-
-    const download =
-      document.getElementById("download");
+  document
+    .getElementById(voice)
+    .classList.add("active");
+}
 
 
-    if (!text) {
+/* CHARACTER COUNT */
 
-      status.textContent =
-        "⚠️ စာအရင်ထည့်ပါ။";
+document
+.getElementById("text")
+.addEventListener("input",function(){
 
-      return;
-    }
+  document.getElementById("count")
+  .textContent = this.value.length;
+
+});
 
 
-    button.disabled = true;
+/* SPEED */
 
-    button.textContent =
-      "⏳ Generating...";
+const speed =
+document.getElementById("speed");
+
+const speedValue =
+document.getElementById("speedValue");
+
+const speedText =
+document.getElementById("speedText");
+
+speed.addEventListener("input",function(){
+
+  const value = parseInt(this.value);
+
+  speedValue.textContent =
+    (value > 0 ? "+" : "") + value + "%";
+
+  speedText.textContent =
+    (value > 0 ? "+" : "") + value + "%";
+
+});
+
+
+/* PITCH */
+
+const pitch =
+document.getElementById("pitch");
+
+const pitchValue =
+document.getElementById("pitchValue");
+
+const pitchText =
+document.getElementById("pitchText");
+
+pitch.addEventListener("input",function(){
+
+  const value = parseInt(this.value);
+
+  pitchValue.textContent =
+    (value > 0 ? "+" : "") + value + "%";
+
+  pitchText.textContent =
+    (value > 0 ? "+" : "") + value + "%";
+
+});
+
+
+/* GENERATE */
+
+async function generateTTS(){
+
+  const text =
+    document.getElementById("text")
+    .value.trim();
+
+  const button =
+    document.getElementById("generate");
+
+  const status =
+    document.getElementById("status");
+
+  const audio =
+    document.getElementById("audio");
+
+  const download =
+    document.getElementById("download");
+
+
+  if(!text){
 
     status.textContent =
-      "အသံဖိုင်ပြုလုပ်နေပါတယ်...";
+      "⚠️ စာအရင်ထည့်ပါ။";
 
-    audio.style.display = "none";
+    return;
+  }
 
-    download.style.display = "none";
+
+  button.disabled = true;
+
+  button.textContent =
+    "⏳ Generating...";
+
+  status.textContent =
+    "အသံဖိုင်ပြုလုပ်နေပါတယ်...";
+
+  audio.style.display = "none";
+
+  download.style.display = "none";
 
 
-    try {
+  try{
 
-      const response = await fetch(
-        WORKER_URL,
-        {
-          method: "POST",
+    const response =
+      await fetch(WORKER_URL,{
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+        method:"POST",
 
-          body: JSON.stringify({
+        headers:{
+          "Content-Type":
+          "application/json"
+        },
 
-            text: text,
+        body:JSON.stringify({
 
-            voice: selectedVoice
+          text:text,
 
-          })
+          voice:selectedVoice,
+
+          speed:
+            parseInt(speed.value),
+
+          pitch:
+            parseInt(pitch.value)
+
+        })
+
+      });
+
+
+    if(!response.ok){
+
+      let errorMessage =
+        "Server error: " +
+        response.status;
+
+      try{
+
+        const error =
+          await response.json();
+
+        if(error.error){
+
+          errorMessage =
+            error.error;
+
         }
+
+      }catch(e){}
+
+      throw new Error(errorMessage);
+
+    }
+
+
+    audioBlob =
+      await response.blob();
+
+
+    if(
+      !audioBlob ||
+      audioBlob.size === 0
+    ){
+
+      throw new Error(
+        "Audio file is empty"
       );
 
-
-      if (!response.ok) {
-
-        let message =
-          "Server error: " +
-          response.status;
-
-        try {
-
-          const error =
-            await response.json();
-
-          if (error.error) {
-            message = error.error;
-          }
-
-        } catch(e) {}
-
-        throw new Error(message);
-      }
-
-
-      audioBlob =
-        await response.blob();
-
-
-      if (
-        !audioBlob ||
-        audioBlob.size === 0
-      ) {
-
-        throw new Error(
-          "Audio file is empty."
-        );
-      }
-
-
-      const audioURL =
-        URL.createObjectURL(audioBlob);
-
-
-      audio.src = audioURL;
-
-      audio.style.display = "block";
-
-      download.style.display = "block";
-
-
-      status.textContent =
-        "✅ အသံဖိုင်ရပါပြီ။";
-
-
-      // Auto play
-      try {
-        await audio.play();
-      } catch(e) {
-        // Browser may block autoplay.
-      }
-
-
-    } catch(error) {
-
-      console.error(error);
-
-      status.textContent =
-        "❌ Error: " +
-        error.message;
-
     }
 
 
-    button.disabled = false;
-
-    button.textContent =
-      "🔊 Generate Voice";
-  }
-
-
-  // ==========================================
-  // DOWNLOAD MP3
-  // ==========================================
-
-  function downloadAudio() {
-
-    if (!audioBlob) {
-      return;
-    }
-
-
-    const url =
+    const audioURL =
       URL.createObjectURL(audioBlob);
 
+    audio.src = audioURL;
 
-    const a =
-      document.createElement("a");
+    audio.style.display =
+      "block";
+
+    download.style.display =
+      "block";
+
+    status.textContent =
+      "✅ အသံဖိုင်ရပါပြီ။";
 
 
-    a.href = url;
+    try{
 
-    a.download =
-      "myanmar-tts.mp3";
+      await audio.play();
+
+    }catch(e){}
 
 
-    document.body.appendChild(a);
+  }catch(error){
 
-    a.click();
+    console.error(error);
 
-    a.remove();
+    status.textContent =
+      "❌ Error: " +
+      error.message;
 
+  }
+
+
+  button.disabled = false;
+
+  button.textContent =
+    "🔊 Generate Voice";
+
+}
+
+
+/* DOWNLOAD */
+
+function downloadMP3(){
+
+  if(!audioBlob){
+
+    return;
+
+  }
+
+
+  const url =
+    URL.createObjectURL(audioBlob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+
+  a.download =
+    "myanmar-tts.mp3";
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+
+  setTimeout(function(){
 
     URL.revokeObjectURL(url);
-  }
+
+  },1000);
+
+}
 
 </script>
 
