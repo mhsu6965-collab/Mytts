@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Myanmar TTS</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      resize: vertical;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 18px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #667eea;
+    }
+
+    .voices {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .voice {
+      flex: 1;
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 17px;
+      background: white;
+    }
+
+    .voice.active {
+      border-color: #667eea;
+      background: #eef0ff;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 18px;
+      cursor: pointer;
+      background: #667eea;
+      color: white;
+      margin-top: 10px;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #download {
+      display: none;
+      text-align: center;
+      margin-top: 12px;
+      padding: 13px;
+      background: #222;
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    #status {
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+    }
+
+    .counter {
+      text-align: right;
+      color: #888;
+      margin-top: 5px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🇲🇲 Myanmar TTS</h1>
+
+  <div class="subtitle">
+    Thiha & Nilar Neural Voice
+  </div>
+
+  <textarea
+    id="text"
+    maxlength="5000"
+    placeholder="မြန်မာစာကို ဒီမှာ ရိုက်ပါ..."
+  ></textarea>
+
+  <div class="counter">
+    <span id="count">0</span> / 5000
+  </div>
+
+  <div class="voices">
+
+    <div
+      class="voice active"
+      id="thiha"
+      onclick="selectVoice('thiha')"
+    >
+      🔵 Thiha
+    </div>
+
+    <div
+      class="voice"
+      id="nilar"
+      onclick="selectVoice('nilar')"
+    >
+      🟣 Nilar
+    </div>
+
+  </div>
+
+  <button id="generate" onclick="generateSpeech()">
+    🔊 Generate Voice
+  </button>
+
+  <div id="status"></div>
+
+  <audio id="player" controls></audio>
+
+  <a id="download" download="myanmar-tts.mp3">
+    ⬇️ Download MP3
+  </a>
+
+</div>
+
+
+<script type="module">
+
+  import { EdgeTTS }
+    from "https://cdn.jsdelivr.net/npm/edge-tts-universal/dist/browser.js";
+
+
+  let selectedVoice = "my-MM-ThihaNeural";
+
+
+  window.selectVoice = function(type) {
+
+    document.getElementById("thiha")
+      .classList.remove("active");
+
+    document.getElementById("nilar")
+      .classList.remove("active");
+
+
+    if (type === "thiha") {
+
+      selectedVoice = "my-MM-ThihaNeural";
+
+      document.getElementById("thiha")
+        .classList.add("active");
+
+    } else {
+
+      selectedVoice = "my-MM-NilarNeural";
+
+      document.getElementById("nilar")
+        .classList.add("active");
+    }
+  };
+
+
+  window.generateSpeech = async function() {
+
+    const text =
+      document.getElementById("text").value.trim();
+
+    const button =
+      document.getElementById("generate");
+
+    const status =
+      document.getElementById("status");
+
+    const player =
+      document.getElementById("player");
+
+    const download =
+      document.getElementById("download");
+
+
+    if (!text) {
+
+      status.innerText =
+        "⚠️ အရင်ဆုံး စာရိုက်ပါ။";
+
+      return;
+    }
+
+
+    button.disabled = true;
+
+    status.innerText =
+      "⏳ အသံဖိုင် ဖန်တီးနေပါတယ်...";
+
+    download.style.display = "none";
+
+
+    try {
+
+      const tts = new EdgeTTS(
+        text,
+        selectedVoice
+      );
+
+
+      const result =
+        await tts.synthesize();
+
+
+      const audioBuffer =
+        await result.audio.arrayBuffer();
+
+
+      const blob =
+        new Blob(
+          [audioBuffer],
+          { type: "audio/mpeg" }
+        );
+
+
+      const url =
+        URL.createObjectURL(blob);
+
+
+      player.src = url;
+
+
+      download.href = url;
+
+      download.style.display =
+        "block";
+
+
+      status.innerText =
+        "✅ အသံဖိုင် အဆင်သင့်ပါပြီ။";
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      status.innerText =
+        "❌ အသံထုတ်ရာမှာ Error ဖြစ်သွားပါတယ်။";
+
+
+    } finally {
+
+      button.disabled = false;
+
+    }
+
+  };
+
+
+  document
+    .getElementById("text")
+    .addEventListener("input", function() {
+
+      document.getElementById("count")
+        .innerText = this.value.length;
+
+    });
+
+</script>
+
+</body>
+</html>
