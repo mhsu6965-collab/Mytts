@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
 <title>Myanmar TTS</title>
 
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -15,7 +21,10 @@ body{
   margin:0;
   padding:20px;
   background:#f4f4f4;
-  font-family:Arial,"Noto Sans Myanmar",sans-serif;
+  font-family:
+    Arial,
+    "Noto Sans Myanmar",
+    sans-serif;
 }
 
 .box{
@@ -29,17 +38,22 @@ body{
 
 h1{
   text-align:center;
+  margin-top:0;
 }
 
 textarea{
   width:100%;
-  height:220px;
+  height:250px;
   padding:15px;
   font-size:18px;
   line-height:1.7;
   border:1px solid #ccc;
   border-radius:10px;
   resize:vertical;
+  font-family:
+    Arial,
+    "Noto Sans Myanmar",
+    sans-serif;
 }
 
 .count{
@@ -61,6 +75,7 @@ textarea{
   background:white;
   border-radius:10px;
   font-size:16px;
+  cursor:pointer;
 }
 
 .voice.active{
@@ -72,7 +87,7 @@ textarea{
   margin-top:20px;
 }
 
-.control label{
+.control-title{
   display:flex;
   justify-content:space-between;
   font-weight:bold;
@@ -98,20 +113,27 @@ input[type="range"]{
   background:#222;
   color:white;
   font-size:18px;
+  cursor:pointer;
 }
 
 #generate:disabled{
   opacity:.6;
 }
 
-#download{
-  width:100%;
-  padding:15px;
+.download-row{
+  display:flex;
+  gap:10px;
   margin-top:12px;
+}
+
+.download-btn{
+  flex:1;
+  padding:14px;
   border:0;
   border-radius:10px;
   background:#e5e5e5;
-  font-size:17px;
+  font-size:16px;
+  cursor:pointer;
   display:none;
 }
 
@@ -126,23 +148,40 @@ audio{
   margin-top:15px;
   display:none;
 }
+
+.info{
+  margin-top:18px;
+  padding:12px;
+  background:#f7f7f7;
+  border-radius:10px;
+  font-size:14px;
+  color:#666;
+  line-height:1.6;
+}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="box">
+
 
 <h1>🇲🇲 Myanmar TTS</h1>
 
+
 <textarea
   id="text"
-  maxlength="5000"
+  maxlength="20000"
   placeholder="မြန်မာစာကို ဒီမှာ ရိုက်ထည့်ပါ..."
 ></textarea>
 
+
 <div class="count">
-  <span id="count">0</span> / 5000
+  <span id="count">0</span> / 20,000
 </div>
 
 
@@ -157,6 +196,7 @@ audio{
 >
 👨 Thiha
 </button>
+
 
 <button
   class="voice"
@@ -173,10 +213,16 @@ audio{
 
 <div class="control">
 
-<label>
+<div class="control-title">
+
 <span>🎚️ Speed</span>
-<span id="speedValue">0%</span>
-</label>
+
+<span id="speedValue">
+0%
+</span>
+
+</div>
+
 
 <input
   type="range"
@@ -187,8 +233,14 @@ audio{
   value="0"
 >
 
+
 <div class="value">
-  Speed: <span id="speedText">0%</span>
+
+Speed:
+<span id="speedText">
+0%
+</span>
+
 </div>
 
 </div>
@@ -198,10 +250,16 @@ audio{
 
 <div class="control">
 
-<label>
+<div class="control-title">
+
 <span>🎵 Pitch</span>
-<span id="pitchValue">0%</span>
-</label>
+
+<span id="pitchValue">
+0%
+</span>
+
+</div>
+
 
 <input
   type="range"
@@ -212,8 +270,14 @@ audio{
   value="0"
 >
 
+
 <div class="value">
-  Pitch: <span id="pitchText">0%</span>
+
+Pitch:
+<span id="pitchText">
+0%
+</span>
+
 </div>
 
 </div>
@@ -232,132 +296,242 @@ audio{
 <div id="status"></div>
 
 
+<!-- AUDIO -->
+
 <audio
   id="audio"
   controls
 ></audio>
 
 
+<!-- DOWNLOAD -->
+
+<div class="download-row">
+
+
 <button
-  id="download"
+  class="download-btn"
+  id="downloadMP3"
   onclick="downloadMP3()"
 >
-⬇️ Download MP3
+⬇️ MP3
 </button>
+
+
+<button
+  class="download-btn"
+  id="downloadSRT"
+  onclick="downloadSRT()"
+>
+📄 SRT
+</button>
+
+
+</div>
+
+
+<div class="info">
+
+💡 <b>SRT</b> ကို အသံဖိုင်ရဲ့ duration အပေါ်မူတည်ပြီး
+စာကြောင်းအလိုက် အလိုအလျောက် ဖန်တီးပေးပါမယ်။
+
+</div>
+
 
 </div>
 
 
 <script>
 
+
+/* =========================
+   WORKER
+========================= */
+
 const WORKER_URL =
 "https://myanmar-tts.thetphyo77790.workers.dev/tts";
+
+
+/* =========================
+   VARIABLES
+========================= */
 
 let selectedVoice = "thiha";
 
 let audioBlob = null;
 
+let srtContent = "";
 
-/* VOICE */
+
+/* =========================
+   VOICE SELECT
+========================= */
 
 function selectVoice(voice){
 
   selectedVoice = voice;
 
+
   document
     .getElementById("thiha")
     .classList.remove("active");
+
 
   document
     .getElementById("nilar")
     .classList.remove("active");
 
+
   document
     .getElementById(voice)
     .classList.add("active");
+
 }
 
 
-/* CHARACTER COUNT */
+/* =========================
+   CHARACTER COUNT
+========================= */
 
 document
 .getElementById("text")
-.addEventListener("input",function(){
+.addEventListener(
+  "input",
+  function(){
 
-  document.getElementById("count")
-  .textContent = this.value.length;
+    document
+      .getElementById("count")
+      .textContent =
+      this.value.length
+        .toLocaleString();
 
-});
+  }
+);
 
 
-/* SPEED */
+/* =========================
+   SPEED
+========================= */
 
 const speed =
 document.getElementById("speed");
 
-const speedValue =
-document.getElementById("speedValue");
 
-const speedText =
-document.getElementById("speedText");
+speed.addEventListener(
+  "input",
+  function(){
 
-speed.addEventListener("input",function(){
-
-  const value = parseInt(this.value);
-
-  speedValue.textContent =
-    (value > 0 ? "+" : "") + value + "%";
-
-  speedText.textContent =
-    (value > 0 ? "+" : "") + value + "%";
-
-});
+    const value =
+      parseInt(this.value);
 
 
-/* PITCH */
+    const display =
+      formatPercent(value);
+
+
+    document
+      .getElementById("speedValue")
+      .textContent = display;
+
+
+    document
+      .getElementById("speedText")
+      .textContent = display;
+
+  }
+);
+
+
+/* =========================
+   PITCH
+========================= */
 
 const pitch =
 document.getElementById("pitch");
 
-const pitchValue =
-document.getElementById("pitchValue");
 
-const pitchText =
-document.getElementById("pitchText");
+pitch.addEventListener(
+  "input",
+  function(){
 
-pitch.addEventListener("input",function(){
-
-  const value = parseInt(this.value);
-
-  pitchValue.textContent =
-    (value > 0 ? "+" : "") + value + "%";
-
-  pitchText.textContent =
-    (value > 0 ? "+" : "") + value + "%";
-
-});
+    const value =
+      parseInt(this.value);
 
 
-/* GENERATE */
+    const display =
+      formatPercent(value);
+
+
+    document
+      .getElementById("pitchValue")
+      .textContent = display;
+
+
+    document
+      .getElementById("pitchText")
+      .textContent = display;
+
+  }
+);
+
+
+/* =========================
+   PERCENT FORMAT
+========================= */
+
+function formatPercent(value){
+
+  if(value > 0){
+
+    return "+" + value + "%";
+
+  }
+
+  return value + "%";
+
+}
+
+
+/* =========================
+   GENERATE TTS
+========================= */
 
 async function generateTTS(){
 
+
   const text =
-    document.getElementById("text")
-    .value.trim();
+    document
+      .getElementById("text")
+      .value
+      .trim();
+
 
   const button =
-    document.getElementById("generate");
+    document
+      .getElementById("generate");
+
 
   const status =
-    document.getElementById("status");
+    document
+      .getElementById("status");
+
 
   const audio =
-    document.getElementById("audio");
+    document
+      .getElementById("audio");
 
-  const download =
-    document.getElementById("download");
 
+  const mp3Button =
+    document
+      .getElementById("downloadMP3");
+
+
+  const srtButton =
+    document
+      .getElementById("downloadSRT");
+
+
+  /* EMPTY */
 
   if(!text){
 
@@ -365,6 +539,19 @@ async function generateTTS(){
       "⚠️ စာအရင်ထည့်ပါ။";
 
     return;
+
+  }
+
+
+  /* 20,000 LIMIT */
+
+  if(text.length > 20000){
+
+    status.textContent =
+      "⚠️ စာလုံးရေ 20,000 ထက် မကျော်ရပါ။";
+
+    return;
+
   }
 
 
@@ -373,42 +560,72 @@ async function generateTTS(){
   button.textContent =
     "⏳ Generating...";
 
+
   status.textContent =
     "အသံဖိုင်ပြုလုပ်နေပါတယ်...";
 
-  audio.style.display = "none";
 
-  download.style.display = "none";
+  audio.style.display =
+    "none";
+
+
+  mp3Button.style.display =
+    "none";
+
+
+  srtButton.style.display =
+    "none";
+
+
+  srtContent = "";
 
 
   try{
 
+
+    /* =====================
+       SEND TO WORKER
+    ===================== */
+
     const response =
-      await fetch(WORKER_URL,{
+      await fetch(
 
-        method:"POST",
+        WORKER_URL,
 
-        headers:{
-          "Content-Type":
-          "application/json"
-        },
+        {
 
-        body:JSON.stringify({
+          method:"POST",
 
-          text:text,
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
 
-          voice:selectedVoice,
 
-          speed:
-            parseInt(speed.value),
+          body:JSON.stringify({
 
-          pitch:
-            parseInt(pitch.value)
+            text:text,
 
-        })
+            voice:selectedVoice,
 
-      });
+            speed:
+              parseInt(
+                speed.value
+              ),
 
+            pitch:
+              parseInt(
+                pitch.value
+              )
+
+          })
+
+        }
+
+      );
+
+
+    /* ERROR */
 
     if(!response.ok){
 
@@ -416,10 +633,12 @@ async function generateTTS(){
         "Server error: " +
         response.status;
 
+
       try{
 
         const error =
           await response.json();
+
 
         if(error.error){
 
@@ -430,10 +649,15 @@ async function generateTTS(){
 
       }catch(e){}
 
-      throw new Error(errorMessage);
+
+      throw new Error(
+        errorMessage
+      );
 
     }
 
+
+    /* AUDIO */
 
     audioBlob =
       await response.blob();
@@ -451,20 +675,79 @@ async function generateTTS(){
     }
 
 
-    const audioURL =
-      URL.createObjectURL(audioBlob);
+    /* AUDIO URL */
 
-    audio.src = audioURL;
+    const audioURL =
+      URL.createObjectURL(
+        audioBlob
+      );
+
+
+    audio.src =
+      audioURL;
+
 
     audio.style.display =
       "block";
 
-    download.style.display =
+
+    mp3Button.style.display =
       "block";
 
-    status.textContent =
-      "✅ အသံဖိုင်ရပါပြီ။";
 
+    status.textContent =
+      "⏳ SRT ပြုလုပ်နေပါတယ်...";
+
+
+    /* =====================
+       WAIT FOR AUDIO DURATION
+    ===================== */
+
+    await waitForAudioMetadata(
+      audio
+    );
+
+
+    const duration =
+      audio.duration;
+
+
+    if(
+      !duration ||
+      !Number.isFinite(duration)
+    ){
+
+      throw new Error(
+        "Audio duration မရပါ။"
+      );
+
+    }
+
+
+    /* =====================
+       CREATE SRT
+    ===================== */
+
+    srtContent =
+      createSRT(
+        text,
+        duration
+      );
+
+
+    if(srtContent){
+
+      srtButton.style.display =
+        "block";
+
+    }
+
+
+    status.textContent =
+      "✅ အသံဖိုင် + SRT ရပါပြီ။";
+
+
+    /* PLAY */
 
     try{
 
@@ -476,6 +759,7 @@ async function generateTTS(){
   }catch(error){
 
     console.error(error);
+
 
     status.textContent =
       "❌ Error: " +
@@ -492,7 +776,385 @@ async function generateTTS(){
 }
 
 
-/* DOWNLOAD */
+/* =========================
+   WAIT AUDIO METADATA
+========================= */
+
+function waitForAudioMetadata(
+  audio
+){
+
+  return new Promise(
+    function(resolve,reject){
+
+      if(
+        audio.readyState >= 1 &&
+        Number.isFinite(audio.duration)
+      ){
+
+        resolve();
+
+        return;
+
+      }
+
+
+      const timeout =
+        setTimeout(
+          function(){
+
+            reject(
+              new Error(
+                "Audio duration မရပါ။"
+              )
+            );
+
+          },
+          15000
+        );
+
+
+      audio.onloadedmetadata =
+        function(){
+
+          clearTimeout(timeout);
+
+          resolve();
+
+        };
+
+
+      audio.onerror =
+        function(){
+
+          clearTimeout(timeout);
+
+          reject(
+            new Error(
+              "Audio metadata error"
+            )
+          );
+
+        };
+
+    }
+  );
+
+}
+
+
+/* =========================
+   CREATE SRT
+========================= */
+
+function createSRT(
+  text,
+  totalDuration
+){
+
+
+  /*
+    စာကြောင်း/ဝါကျ ခွဲခြင်း
+
+    မြန်မာ "။"
+    English "."
+    ?
+    !
+    newline
+  */
+
+
+  let sentences =
+    text
+      .replace(/\r/g,"")
+      .split(
+        /(?<=[။.!?])\s+|\n+/
+      );
+
+
+  sentences =
+    sentences
+      .map(
+        function(item){
+          return item.trim();
+        }
+      )
+      .filter(
+        function(item){
+          return item.length > 0;
+        }
+      );
+
+
+  /*
+    ဝါကျတစ်ကြောင်းတည်း ဖြစ်နေခဲ့ရင်
+    character chunks ခွဲ
+  */
+
+  if(sentences.length === 0){
+
+    return "";
+
+  }
+
+
+  /*
+    Subtitle တစ်ခု အရမ်းရှည်မနေအောင်
+    120 characters ခန့်စီ ထပ်ခွဲ
+  */
+
+  const finalParts = [];
+
+
+  for(
+    const sentence of sentences
+  ){
+
+    if(sentence.length <= 120){
+
+      finalParts.push(
+        sentence
+      );
+
+      continue;
+
+    }
+
+
+    let remaining =
+      sentence;
+
+
+    while(
+      remaining.length > 120
+    ){
+
+      let cut =
+        remaining.lastIndexOf(
+          " ",
+          120
+        );
+
+
+      if(cut < 40){
+
+        cut = 120;
+
+      }
+
+
+      finalParts.push(
+        remaining
+          .slice(0,cut)
+          .trim()
+      );
+
+
+      remaining =
+        remaining
+          .slice(cut)
+          .trim();
+
+    }
+
+
+    if(remaining){
+
+      finalParts.push(
+        remaining
+      );
+
+    }
+
+  }
+
+
+  /*
+    Character အရေအတွက်အလိုက်
+    audio duration ခွဲဝေ
+  */
+
+  let totalCharacters = 0;
+
+
+  for(
+    const part of finalParts
+  ){
+
+    totalCharacters +=
+      part.length;
+
+  }
+
+
+  let currentTime = 0;
+
+  let output = "";
+
+
+  for(
+    let i = 0;
+    i < finalParts.length;
+    i++
+  ){
+
+    const part =
+      finalParts[i];
+
+
+    const ratio =
+      part.length /
+      totalCharacters;
+
+
+    let partDuration =
+      totalDuration *
+      ratio;
+
+
+    /*
+      အရမ်းတိုတဲ့ subtitle မဖြစ်အောင်
+      minimum 0.5 sec
+    */
+
+    if(partDuration < 0.5){
+
+      partDuration = 0.5;
+
+    }
+
+
+    const start =
+      currentTime;
+
+
+    let end =
+      currentTime +
+      partDuration;
+
+
+    if(
+      i === finalParts.length - 1
+    ){
+
+      end =
+        totalDuration;
+
+    }
+
+
+    output +=
+      (i + 1) +
+      "\n";
+
+
+    output +=
+      formatSRTTime(start) +
+      " --> " +
+      formatSRTTime(end) +
+      "\n";
+
+
+    output +=
+      part +
+      "\n\n";
+
+
+    currentTime =
+      end;
+
+  }
+
+
+  return output.trim() + "\n";
+
+}
+
+
+/* =========================
+   SRT TIME
+========================= */
+
+function formatSRTTime(
+  seconds
+){
+
+  if(!Number.isFinite(seconds)){
+
+    seconds = 0;
+
+  }
+
+
+  const totalMilliseconds =
+    Math.max(
+      0,
+      Math.round(
+        seconds * 1000
+      )
+    );
+
+
+  const hours =
+    Math.floor(
+      totalMilliseconds /
+      3600000
+    );
+
+
+  const minutes =
+    Math.floor(
+      (
+        totalMilliseconds %
+        3600000
+      ) /
+      60000
+    );
+
+
+  const secs =
+    Math.floor(
+      (
+        totalMilliseconds %
+        60000
+      ) /
+      1000
+    );
+
+
+  const milliseconds =
+    totalMilliseconds %
+    1000;
+
+
+  return (
+
+    String(hours)
+      .padStart(2,"0")
+
+    + ":" +
+
+    String(minutes)
+      .padStart(2,"0")
+
+    + ":" +
+
+    String(secs)
+      .padStart(2,"0")
+
+    + "," +
+
+    String(milliseconds)
+      .padStart(3,"0")
+
+  );
+
+}
+
+
+/* =========================
+   DOWNLOAD MP3
+========================= */
 
 function downloadMP3(){
 
@@ -504,32 +1166,118 @@ function downloadMP3(){
 
 
   const url =
-    URL.createObjectURL(audioBlob);
+    URL.createObjectURL(
+      audioBlob
+    );
+
 
   const a =
     document.createElement("a");
+
 
   a.href = url;
 
   a.download =
     "myanmar-tts.mp3";
 
-  document.body.appendChild(a);
+
+  document
+    .body
+    .appendChild(a);
+
 
   a.click();
 
   a.remove();
 
 
-  setTimeout(function(){
+  setTimeout(
+    function(){
 
-    URL.revokeObjectURL(url);
+      URL.revokeObjectURL(
+        url
+      );
 
-  },1000);
+    },
+    1000
+  );
+
+}
+
+
+/* =========================
+   DOWNLOAD SRT
+========================= */
+
+function downloadSRT(){
+
+  if(!srtContent){
+
+    return;
+
+  }
+
+
+  /*
+    UTF-8 BOM ထည့်ထားတာကြောင့်
+    Burmese စာကို subtitle software
+    တွေမှာ ပိုကောင်းကောင်းဖတ်နိုင်ပါတယ်။
+  */
+
+  const blob =
+    new Blob(
+      [
+        "\uFEFF",
+        srtContent
+      ],
+      {
+        type:
+          "application/x-subrip;charset=utf-8"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const a =
+    document.createElement("a");
+
+
+  a.href = url;
+
+  a.download =
+    "myanmar-tts.srt";
+
+
+  document
+    .body
+    .appendChild(a);
+
+
+  a.click();
+
+  a.remove();
+
+
+  setTimeout(
+    function(){
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1000
+  );
 
 }
 
 </script>
+
 
 </body>
 </html>
