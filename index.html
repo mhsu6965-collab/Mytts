@@ -1,1515 +1,369 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Myanmar TTS + TXT + Gemini</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  padding:20px;
-  background:#f4f6f8;
-  font-family:Arial,sans-serif
-}
-
-.container{
-  max-width:850px;
-  margin:auto;
-  background:white;
-  padding:22px;
-  border-radius:16px;
-  box-shadow:0 5px 25px rgba(0,0,0,.08)
-}
-
-h1{
-  text-align:center;
-  margin-top:0;
-  font-size:26px
-}
-
-h2{
-  font-size:18px;
-  margin-top:24px
-}
-
-label{
-  display:block;
-  font-weight:bold;
-  margin-bottom:8px
-}
-
-input[type=file],
-textarea{
-  width:100%;
-  border:1px solid #ccc;
-  border-radius:10px;
-  padding:12px;
-  font-size:15px;
-  outline:none
-}
-
-input[type=file]:focus,
-textarea:focus{
-  border-color:#555
-}
-
-textarea{
-  min-height:180px;
-  resize:vertical
-}
-
-button{
-  border:none;
-  border-radius:10px;
-  padding:12px 18px;
-  margin-top:10px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer
-}
-
-.primary{
-  background:#111;
-  color:white
-}
-
-.secondary{
-  background:#e9ecef;
-  color:#111
-}
-
-.success{
-  background:#198754;
-  color:white
-}
-
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed
-}
-
-.voice-buttons{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap
-}
-
-.voice-buttons button{
-  flex:1;
-  min-width:120px
-}
-
-.voice-active{
-  background:#111!important;
-  color:white!important
-}
-
-.control{
-  margin-top:18px
-}
-
-.range-row{
-  display:flex;
-  align-items:center;
-  gap:12px
-}
-
-.range-row input{
-  flex:1
-}
-
-.value{
-  width:65px;
-  text-align:center;
-  font-weight:bold
-}
-
-.counter{
-  text-align:right;
-  font-size:13px;
-  color:#777;
-  margin-top:5px
-}
-
-.status{
-  margin-top:18px;
-  padding:12px;
-  border-radius:10px;
-  background:#f1f3f5;
-  display:none;
-  white-space:pre-wrap
-}
-
-.status.error{
-  background:#ffe5e5;
-  color:#a00000
-}
-
-.status.success{
-  background:#e5f8ed;
-  color:#126b3c
-}
-
-.progress{
-  width:100%;
-  height:8px;
-  background:#e9ecef;
-  border-radius:10px;
-  margin-top:12px;
-  overflow:hidden;
-  display:none
-}
-
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:#111;
-  transition:width .3s
-}
-
-audio{
-  width:100%;
-  margin-top:15px
-}
-
-.download-area{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:10px
-}
-
-.download-area button{
-  flex:1;
-  min-width:140px
-}
-
-.small-note{
-  font-size:13px;
-  color:#777;
-  line-height:1.5;
-  margin-top:8px
-}
-
-.file-name{
-  margin-top:8px;
-  font-size:13px;
-  color:#555
-}
-
-@media(max-width:600px){
-
-  body{
-    padding:10px
-  }
-
-  .container{
-    padding:16px
-  }
-
-  h1{
-    font-size:22px
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myanmar Recap AI TTS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+    .box {
+      max-width: 850px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.08);
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 25px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 16px 0 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      resize: vertical;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .small {
+      color: #666;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .field {
+      flex: 1;
+      min-width: 220px;
+    }
+    select, input[type="range"] {
+      width: 100%;
+    }
+    select {
+      padding: 11px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      background: white;
+    }
+    input[type="range"] {
+      accent-color: #333;
+    }
+    .value {
+      font-weight: bold;
+      margin-top: 4px;
+    }
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px;
+      border: 0;
+      border-radius: 10px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .secondary {
+      background: #555;
+    }
+    #status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f0f0f0;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+    audio {
+      width: 100%;
+      margin-top: 15px;
+    }
+    .download {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      padding: 12px;
+      background: #eee;
+      color: #111;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
+<div class="box">
+  <h1>ðŸŽ¬ Myanmar Recap AI Voice</h1>
 
-<div class="container">
+  <label>1. TXT Transcript Upload</label>
+  <input id="fileInput" type="file" accept=".txt,text/plain">
+  <div class="small">
+    TXT á€–á€­á€¯á€„á€ºá€á€„á€ºá€•á€¼á€®á€¸ á€¡á€±á€¬á€€á€ºá€€ Generate Recap á€€á€­á€¯á€”á€¾á€­á€•á€ºá€•á€«á‹
+  </div>
 
-<h1>Myanmar TTS + TXT + Gemini</h1>
+  <label>2. Original Transcript</label>
+  <textarea id="sourceText" placeholder="TXT á€–á€­á€¯á€„á€ºá€‘á€²á€€á€…á€¬ á€’á€®á€”á€±á€›á€¬á€™á€¾á€¬á€•á€±á€«á€ºá€œá€¬á€•á€«á€™á€šá€ºá‹"></textarea>
 
+  <button id="recapBtn">Generate Long-Form Myanmar Recap</button>
 
-<!-- TXT UPLOAD -->
+  <label>3. Myanmar Recap Script</label>
+  <textarea id="recapText" placeholder="Gemini á€€ á€•á€¼á€”á€ºá€›á€±á€¸á€•á€±á€¸á€™á€šá€·á€º Myanmar recap script á€’á€®á€”á€±á€›á€¬á€™á€¾á€¬á€•á€±á€«á€ºá€œá€¬á€•á€«á€™á€šá€ºá‹"></textarea>
+  <div class="small">
+    Script á€¡á€›á€¾á€Šá€ºá€€á€­á€¯ TTS 20,000 characters limit á€”á€²á€· á€™á€€á€”á€·á€ºá€žá€á€ºá€‘á€¬á€¸á€•á€«á‹ TTS á€œá€¯á€•á€ºá€á€²á€·á€¡á€á€»á€­á€”á€º Worker á€€ á€¡á€á€½á€„á€ºá€¸á€•á€­á€¯á€„á€ºá€¸á€™á€¾á€¬ á€¡á€•á€­á€¯á€„á€ºá€¸á€á€½á€²á€•á€±á€¸á€•á€«á€™á€šá€ºá‹
+  </div>
 
-<h2>1. Upload Transcript TXT</h2>
+  <div class="row">
+    <div class="field">
+      <label>Voice</label>
+      <select id="voice">
+        <option value="thiha">Thiha (Male)</option>
+        <option value="nilar">Nilar (Female)</option>
+      </select>
+    </div>
 
-<label>Select TXT File</label>
+    <div class="field">
+      <label>Speed</label>
+      <input id="speed" type="range" min="-100" max="100" value="0">
+      <div class="value" id="speedValue">0%</div>
+    </div>
 
-<input
-  type="file"
-  id="txtFile"
-  accept=".txt,text/plain"
->
+    <div class="field">
+      <label>Pitch</label>
+      <input id="pitch" type="range" min="-100" max="100" value="0">
+      <div class="value" id="pitchValue">0%</div>
+    </div>
+  </div>
 
-<div
-  class="file-name"
-  id="fileName"
-></div>
+  <button id="ttsBtn">Generate Voice</button>
 
-<div class="small-note">
-TXT ဖိုင်ထဲမှာ Transcript စာသားပဲ ပါရပါမယ်။
+  <div id="status">Ready.</div>
+
+  <audio id="audio" controls></audio>
+
+  <a id="downloadMp3" class="download" style="display:none;">
+    Download MP3
+  </a>
 </div>
-
-<button
-  class="primary"
-  id="loadTxtBtn"
-  onclick="loadTXT()"
-  disabled
->
-Load TXT
-</button>
-
-
-<!-- ORIGINAL -->
-
-<h2>2. Original Transcript</h2>
-
-<textarea
-  id="originalText"
-  placeholder="TXT file ထဲက transcript ဒီမှာပေါ်ပါမယ်..."
-></textarea>
-
-<div class="counter">
-<span id="originalCount">0</span> characters
-</div>
-
-
-<!-- TRANSLATE -->
-
-<button
-  class="primary"
-  id="translateBtn"
-  onclick="translateMyanmar()"
-  disabled
->
-Translate to Myanmar
-</button>
-
-
-<!-- MYANMAR -->
-
-<h2>3. Myanmar Transcript</h2>
-
-<textarea
-  id="myanmarText"
-  maxlength="20000"
-  placeholder="မြန်မာဘာသာပြန်စာ ဒီမှာပေါ်ပါမယ်..."
-></textarea>
-
-<div class="counter">
-<span id="charCount">0</span> / 20,000
-</div>
-
-
-<!-- VOICE -->
-
-<h2>4. Voice</h2>
-
-<div class="voice-buttons">
-
-<button
-  id="thihaBtn"
-  class="secondary voice-active"
-  onclick="selectVoice('thiha')"
->
-Thiha
-</button>
-
-<button
-  id="nilarBtn"
-  class="secondary"
-  onclick="selectVoice('nilar')"
->
-Nilar
-</button>
-
-</div>
-
-
-<!-- SPEED -->
-
-<div class="control">
-
-<label>Speed</label>
-
-<div class="range-row">
-
-<span>-100%</span>
-
-<input
-  type="range"
-  id="speed"
-  min="-100"
-  max="100"
-  value="0"
-  step="1"
->
-
-<span>+100%</span>
-
-<div
-  class="value"
-  id="speedValue"
->
-0%
-</div>
-
-</div>
-
-</div>
-
-
-<!-- PITCH -->
-
-<div class="control">
-
-<label>Pitch</label>
-
-<div class="range-row">
-
-<span>-100%</span>
-
-<input
-  type="range"
-  id="pitch"
-  min="-100"
-  max="100"
-  value="0"
-  step="1"
->
-
-<span>+100%</span>
-
-<div
-  class="value"
-  id="pitchValue"
->
-0%
-</div>
-
-</div>
-
-</div>
-
-
-<!-- GENERATE -->
-
-<button
-  class="success"
-  id="generateBtn"
-  onclick="generateTTS()"
-  disabled
->
-Generate Myanmar Voice
-</button>
-
-
-<!-- PROGRESS -->
-
-<div
-  class="progress"
-  id="progress"
->
-
-<div
-  class="progress-bar"
-  id="progressBar"
-></div>
-
-</div>
-
-
-<!-- STATUS -->
-
-<div
-  class="status"
-  id="status"
-></div>
-
-
-<!-- AUDIO -->
-
-<h2>5. Audio</h2>
-
-<audio
-  id="audioPlayer"
-  controls
-></audio>
-
-
-<!-- DOWNLOAD -->
-
-<div class="download-area">
-
-<button
-  class="secondary"
-  onclick="downloadMP3()"
-  id="downloadMp3Btn"
-  disabled
->
-Download MP3
-</button>
-
-<button
-  class="secondary"
-  onclick="downloadSRT()"
-  id="downloadSrtBtn"
-  disabled
->
-Download SRT
-</button>
-
-</div>
-
-</div>
-
 
 <script>
+const WORKER_URL = "https://myanmar-tts.thetphyo77790.workers.dev";
 
-/* =========================================
-   CONFIG
-========================================= */
+const fileInput = document.getElementById("fileInput");
+const sourceText = document.getElementById("sourceText");
+const recapText = document.getElementById("recapText");
+const recapBtn = document.getElementById("recapBtn");
+const ttsBtn = document.getElementById("ttsBtn");
+const voice = document.getElementById("voice");
+const speed = document.getElementById("speed");
+const pitch = document.getElementById("pitch");
+const speedValue = document.getElementById("speedValue");
+const pitchValue = document.getElementById("pitchValue");
+const statusBox = document.getElementById("status");
+const audio = document.getElementById("audio");
+const downloadMp3 = document.getElementById("downloadMp3");
 
-const WORKER_URL =
-"https://myanmar-tts.thetphyo77790.workers.dev";
+let currentAudioUrl = null;
 
-
-let selectedVoice = "thiha";
-
-let originalTranscript = "";
-
-let translatedText = "";
-
-let audioBlob = null;
-
-let audioUrl = null;
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const txtFile =
-document.getElementById("txtFile");
-
-const fileName =
-document.getElementById("fileName");
-
-const loadTxtBtn =
-document.getElementById("loadTxtBtn");
-
-const originalText =
-document.getElementById("originalText");
-
-const originalCount =
-document.getElementById("originalCount");
-
-const myanmarText =
-document.getElementById("myanmarText");
-
-const translateBtn =
-document.getElementById("translateBtn");
-
-const generateBtn =
-document.getElementById("generateBtn");
-
-const statusBox =
-document.getElementById("status");
-
-const progress =
-document.getElementById("progress");
-
-const progressBar =
-document.getElementById("progressBar");
-
-const audioPlayer =
-document.getElementById("audioPlayer");
-
-const downloadMp3Btn =
-document.getElementById("downloadMp3Btn");
-
-const downloadSrtBtn =
-document.getElementById("downloadSrtBtn");
-
-const speed =
-document.getElementById("speed");
-
-const pitch =
-document.getElementById("pitch");
-
-const speedValue =
-document.getElementById("speedValue");
-
-const pitchValue =
-document.getElementById("pitchValue");
-
-
-/* =========================================
-   STATUS
-========================================= */
-
-function showStatus(
-message,
-type=""
-){
-
-statusBox.style.display =
-"block";
-
-statusBox.className =
-"status " + type;
-
-statusBox.textContent =
-message;
-
+function setStatus(message) {
+  statusBox.textContent = message;
 }
 
-
-function hideStatus(){
-
-statusBox.style.display =
-"none";
-
+function setBusy(button, busy, normalText) {
+  button.disabled = busy;
+  button.textContent = busy ? "á€œá€¯á€•á€ºá€†á€±á€¬á€„á€ºá€”á€±á€•á€«á€žá€Šá€º..." : normalText;
 }
 
-
-/* =========================================
-   PROGRESS
-========================================= */
-
-function showProgress(
-percent
-){
-
-progress.style.display =
-"block";
-
-progressBar.style.width =
-percent + "%";
-
-}
-
-
-function hideProgress(){
-
-progress.style.display =
-"none";
-
-progressBar.style.width =
-"0%";
-
-}
-
-
-/* =========================================
-   VOICE
-========================================= */
-
-function selectVoice(
-voice
-){
-
-selectedVoice =
-voice;
-
-document
-.getElementById("thihaBtn")
-.classList.remove(
-"voice-active"
-);
-
-document
-.getElementById("nilarBtn")
-.classList.remove(
-"voice-active"
-);
-
-
-if(
-voice === "thiha"
-){
-
-document
-.getElementById("thihaBtn")
-.classList.add(
-"voice-active"
-);
-
-}else{
-
-document
-.getElementById("nilarBtn")
-.classList.add(
-"voice-active"
-);
-
-}
-
-}
-
-
-/* =========================================
-   SPEED / PITCH
-========================================= */
-
-speed.addEventListener(
-"input",
-()=>{
-
-speedValue.textContent =
-formatPercent(
-Number(speed.value)
-);
-
-}
-);
-
-
-pitch.addEventListener(
-"input",
-()=>{
-
-pitchValue.textContent =
-formatPercent(
-Number(pitch.value)
-);
-
-}
-);
-
-
-function formatPercent(
-value
-){
-
-if(value > 0){
-
-return "+" +
-value +
-"%";
-
-}
-
-return value +
-"%";
-
-}
-
-
-/* =========================================
-   FILE SELECT
-========================================= */
-
-txtFile.addEventListener(
-"change",
-()=>{
-
-if(
-txtFile.files.length
-){
-
-fileName.textContent =
-"Selected: " +
-txtFile.files[0].name;
-
-loadTxtBtn.disabled =
-false;
-
-}else{
-
-fileName.textContent =
-"";
-
-loadTxtBtn.disabled =
-true;
-
-}
-
-}
-);
-
-
-/* =========================================
-   LOAD TXT
-========================================= */
-
-async function loadTXT(){
-
-const file =
-txtFile.files[0];
-
-if(!file){
-
-showStatus(
-"TXT ဖိုင်ရွေးပါ။",
-"error"
-);
-
-return;
-}
-
-
-loadTxtBtn.disabled =
-true;
-
-translateBtn.disabled =
-true;
-
-generateBtn.disabled =
-true;
-
-originalText.value =
-"";
-
-myanmarText.value =
-"";
-
-translatedText =
-"";
-
-originalTranscript =
-"";
-
-
-showProgress(10);
-
-showStatus(
-"TXT ဖိုင်ကို ဖတ်နေပါတယ်..."
-);
-
-
-try{
-
-const text =
-await file.text();
-
-
-const cleanText =
-text
-.replace(/^\uFEFF/,"")
-.trim();
-
-
-if(!cleanText){
-
-throw new Error(
-"TXT ဖိုင်ထဲမှာ စာသားမတွေ့ပါ။"
-);
-
-}
-
-
-originalTranscript =
-cleanText;
-
-originalText.value =
-cleanText;
-
-originalCount.textContent =
-cleanText.length;
-
-
-translateBtn.disabled =
-false;
-
-
-showProgress(100);
-
-showStatus(
-"TXT ဖိုင်ဖတ်ပြီးပါပြီ။\n\n" +
-cleanText.length +
-" characters ရှိပါတယ်။",
-"success"
-);
-
-
-setTimeout(
-hideProgress,
-700
-);
-
-
-}catch(error){
-
-hideProgress();
-
-showStatus(
-"TXT ဖိုင်ဖတ်ရာမှာ Error ဖြစ်ပါတယ်။\n\n" +
-error.message,
-"error"
-);
-
-}finally{
-
-loadTxtBtn.disabled =
-false;
-
-}
-
-}
-
-
-/* =========================================
-   ORIGINAL TEXT MANUAL EDIT
-========================================= */
-
-originalText.addEventListener(
-"input",
-()=>{
-
-originalTranscript =
-originalText.value;
-
-originalCount.textContent =
-originalText.value.length;
-
-translateBtn.disabled =
-!originalText.value.trim();
-
-}
-);
-
-
-/* =========================================
-   CHARACTER COUNT
-========================================= */
-
-myanmarText.addEventListener(
-"input",
-updateCharCount
-);
-
-
-function updateCharCount(){
-
-document.getElementById(
-"charCount"
-).textContent =
-myanmarText.value.length;
-
-
-generateBtn.disabled =
-!myanmarText.value.trim();
-
-}
-
-
-/* =========================================
-   TRANSLATE
-========================================= */
-
-async function translateMyanmar(){
-
-const text =
-originalText.value.trim();
-
-
-if(!text){
-
-showStatus(
-"Original Transcript မရှိသေးပါ။",
-"error"
-);
-
-return;
-}
-
-
-translateBtn.disabled =
-true;
-
-generateBtn.disabled =
-true;
-
-myanmarText.value =
-"";
-
-translatedText =
-"";
-
-
-showStatus(
-"Gemini နဲ့ မြန်မာလို ဘာသာပြန်နေပါတယ်..."
-);
-
-showProgress(10);
-
-
-try{
-
-/*
-  Worker ရဲ့ /translate endpoint
-  ကို TXT transcript အဖြစ် ပို့ပါတယ်။
-*/
-
-const response =
-await fetch(
-WORKER_URL +
-"/translate",
-{
-method:"POST",
-
-headers:{
-"Content-Type":
-"application/json"
-},
-
-body:JSON.stringify({
-
-/*
-  လက်ရှိ Worker က
-  segments array ကိုမျှော်လင့်ထားတဲ့အတွက်
-  TXT ကို segment တစ်ခုအဖြစ် ပို့ထားပါတယ်။
-*/
-
-segments:[
-{
-index:1,
-start:0,
-end:0,
-text:text
-}
-]
-
-})
-}
-);
-
-
-const data =
-await response.json();
-
-
-if(
-!response.ok ||
-!data.success
-){
-
-throw new Error(
-data.error ||
-"Translation failed"
-);
-
-}
-
-
-translatedText =
-data.text || "";
-
-
-myanmarText.value =
-translatedText;
-
-
-updateCharCount();
-
-
-showProgress(100);
-
-
-showStatus(
-"ဘာသာပြန်ပြီးပါပြီ။\n\n" +
-(data.parts || 1) +
-" ပိုင်းနဲ့ Gemini က ဘာသာပြန်ထားပါတယ်။",
-"success"
-);
-
-
-setTimeout(
-hideProgress,
-700
-);
-
-
-}catch(error){
-
-hideProgress();
-
-showStatus(
-"ဘာသာပြန်ရာမှာ Error ဖြစ်ပါတယ်။\n\n" +
-error.message,
-"error"
-);
-
-}finally{
-
-translateBtn.disabled =
-false;
-
-}
-
-}
-
-
-/* =========================================
-   GENERATE TTS
-========================================= */
-
-async function generateTTS(){
-
-const text =
-myanmarText.value.trim();
-
-
-if(!text){
-
-showStatus(
-"မြန်မာစာ မရှိသေးပါ။",
-"error"
-);
-
-return;
-}
-
-
-generateBtn.disabled =
-true;
-
-downloadMp3Btn.disabled =
-true;
-
-downloadSrtBtn.disabled =
-true;
-
-
-showStatus(
-"မြန်မာအသံထုတ်နေပါတယ်..."
-);
-
-showProgress(10);
-
-
-try{
-
-const response =
-await fetch(
-WORKER_URL +
-"/tts",
-{
-method:"POST",
-
-headers:{
-"Content-Type":
-"application/json"
-},
-
-body:JSON.stringify({
-
-text,
-
-voice:
-selectedVoice,
-
-speed:
-Number(speed.value),
-
-pitch:
-Number(pitch.value)
-
-})
-}
-);
-
-
-if(!response.ok){
-
-let errorMessage =
-"TTS failed";
-
-try{
-
-const error =
-await response.json();
-
-errorMessage =
-error.error ||
-errorMessage;
-
-}catch{}
-
-throw new Error(
-errorMessage
-);
-
-}
-
-
-audioBlob =
-await response.blob();
-
-
-if(audioUrl){
-
-URL.revokeObjectURL(
-audioUrl
-);
-
-}
-
-
-audioUrl =
-URL.createObjectURL(
-audioBlob
-);
-
-
-audioPlayer.src =
-audioUrl;
-
-
-showProgress(100);
-
-
-showStatus(
-"အသံထုတ်ပြီးပါပြီ။",
-"success"
-);
-
-
-downloadMp3Btn.disabled =
-false;
-
-downloadSrtBtn.disabled =
-false;
-
-
-setTimeout(
-hideProgress,
-700
-);
-
-
-}catch(error){
-
-hideProgress();
-
-showStatus(
-"အသံထုတ်ရာမှာ Error ဖြစ်ပါတယ်။\n\n" +
-error.message,
-"error"
-);
-
-}finally{
-
-generateBtn.disabled =
-false;
-
-}
-
-}
-
-
-/* =========================================
-   DOWNLOAD MP3
-========================================= */
-
-function downloadMP3(){
-
-if(!audioBlob){
-return;
-}
-
-
-const a =
-document.createElement("a");
-
-a.href =
-audioUrl;
-
-a.download =
-"myanmar-tts.mp3";
-
-
-document.body.appendChild(a);
-
-a.click();
-
-a.remove();
-
-}
-
-
-/* =========================================
-   CREATE SRT
-========================================= */
-
-function createSRT(
-text,
-duration
-){
-
-const sentences =
-splitForSRT(text);
-
-
-if(!sentences.length){
-return "";
-}
-
-
-const weights =
-sentences.map(
-x => Math.max(
-x.length,
-1
-)
-);
-
-
-const totalWeight =
-weights.reduce(
-(a,b) => a+b,
-0
-);
-
-
-let current = 0;
-
-let output = "";
-
-
-for(
-let i=0;
-i<sentences.length;
-i++
-){
-
-const part =
-duration *
-(
-weights[i] /
-totalWeight
-);
-
-
-const start =
-current;
-
-const end =
-current + part;
-
-
-output +=
-(i+1) +
-"\n";
-
-
-output +=
-srtTime(start) +
-" --> " +
-srtTime(end) +
-"\n";
-
-
-output +=
-sentences[i].trim() +
-"\n\n";
-
-
-current =
-end;
-
-}
-
-
-return output;
-
-}
-
-
-/* =========================================
-   SPLIT SENTENCES
-========================================= */
-
-function splitForSRT(
-text
-){
-
-let parts =
-text
-.split(
-/(?<=[။.!?])\s+|\n+/
-)
-.map(
-x => x.trim()
-)
-.filter(Boolean);
-
-
-const result = [];
-
-
-for(
-const part of parts
-){
-
-if(
-part.length <= 120
-){
-
-result.push(part);
-
-}else{
-
-for(
-let i=0;
-i<part.length;
-i+=120
-){
-
-result.push(
-part.slice(
-i,
-i+120
-)
-);
-
-}
-
-}
-
-}
-
-
-return result;
-
-}
-
-
-/* =========================================
-   SRT TIME
-========================================= */
-
-function srtTime(
-seconds
-){
-
-const totalMs =
-Math.max(
-0,
-Math.round(
-seconds * 1000
-)
-);
-
-
-const ms =
-totalMs % 1000;
-
-
-const totalSec =
-Math.floor(
-totalMs / 1000
-);
-
-
-const sec =
-totalSec % 60;
-
-
-const totalMin =
-Math.floor(
-totalSec / 60
-);
-
-
-const min =
-totalMin % 60;
-
-
-const hour =
-Math.floor(
-totalMin / 60
-);
-
-
-return(
-String(hour)
-.padStart(2,"0") +
-":" +
-String(min)
-.padStart(2,"0") +
-":" +
-String(sec)
-.padStart(2,"0") +
-"," +
-String(ms)
-.padStart(3,"0")
-);
-
-}
-
-
-/* =========================================
-   DOWNLOAD SRT
-========================================= */
-
-function downloadSRT(){
-
-if(
-!audioPlayer.duration ||
-!myanmarText.value.trim()
-){
-
-showStatus(
-"SRT ထုတ်ဖို့ Audio ကို အရင် Generate လုပ်ပါ။",
-"error"
-);
-
-return;
-}
-
-
-const srt =
-createSRT(
-myanmarText.value,
-audioPlayer.duration
-);
-
-
-const blob =
-new Blob(
-[
-"\uFEFF",
-srt
-],
-{
-type:
-"application/x-subrip;charset=utf-8"
-}
-);
-
-
-const url =
-URL.createObjectURL(blob);
-
-
-const a =
-document.createElement("a");
-
-
-a.href =
-url;
-
-a.download =
-"myanmar-subtitle.srt";
-
-
-document.body.appendChild(a);
-
-a.click();
-
-a.remove();
-
-
-URL.revokeObjectURL(url);
-
-}
-
-
-/* =========================================
-   INITIAL
-========================================= */
-
-updateCharCount();
-
+speed.addEventListener("input", () => {
+  speedValue.textContent = speed.value + "%";
+});
+
+pitch.addEventListener("input", () => {
+  pitchValue.textContent = pitch.value + "%";
+});
+
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
+
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    sourceText.value = text;
+
+    setStatus(
+      "TXT á€–á€­á€¯á€„á€ºá€–á€á€ºá€•á€¼á€®á€¸á€•á€«á€•á€¼á€®á‹\\n" +
+      "á€¡á€á€¯ Generate Long-Form Myanmar Recap á€€á€­á€¯á€”á€¾á€­á€•á€ºá€•á€«á‹"
+    );
+  } catch (error) {
+    setStatus("TXT á€–á€­á€¯á€„á€ºá€–á€á€ºá€™á€›á€•á€«: " + error.message);
+  }
+});
+
+recapBtn.addEventListener("click", async () => {
+  const text = sourceText.value.trim();
+
+  if (!text) {
+    setStatus("TXT transcript á€™á€›á€¾á€­á€žá€±á€¸á€•á€«á‹");
+    return;
+  }
+
+  setBusy(recapBtn, true, "Generate Long-Form Myanmar Recap");
+
+  try {
+    setStatus(
+      "Gemini á€€ á€‡á€¬á€á€ºá€œá€™á€ºá€¸á€á€…á€ºá€á€¯á€œá€¯á€¶á€¸á€€á€­á€¯ á€”á€¬á€¸á€œá€Šá€ºá€•á€¼á€®á€¸ Myanmar recap script á€›á€±á€¸á€”á€±á€•á€«á€žá€Šá€ºá‹\\n" +
+      "á€…á€¬á€¡á€›á€¾á€Šá€ºá€•á€±á€«á€ºá€™á€°á€á€Šá€ºá€•á€¼á€®á€¸ á€¡á€á€»á€­á€”á€ºá€”á€Šá€ºá€¸á€”á€Šá€ºá€¸á€€á€¼á€¬á€”á€­á€¯á€„á€ºá€•á€«á€á€šá€º..."
+    );
+
+    const response = await fetch(WORKER_URL + "/recap", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: text
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || ("HTTP " + response.status));
+    }
+
+    recapText.value = data.text || "";
+
+    setStatus(
+      "âœ… Myanmar recap script á€›á€•á€«á€•á€¼á€®á‹\\n" +
+      "Script á€€á€­á€¯á€œá€­á€¯á€žá€œá€­á€¯ á€•á€¼á€„á€ºá€•á€¼á€®á€¸ Generate Voice á€€á€­á€¯á€”á€¾á€­á€•á€ºá€”á€­á€¯á€„á€ºá€•á€«á€á€šá€ºá‹"
+    );
+
+    recapText.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+  } catch (error) {
+    setStatus("âŒ Recap Error:\\n" + error.message);
+  } finally {
+    setBusy(recapBtn, false, "Generate Long-Form Myanmar Recap");
+  }
+});
+
+ttsBtn.addEventListener("click", async () => {
+  const text = recapText.value.trim();
+
+  if (!text) {
+    setStatus("Myanmar recap script á€™á€›á€¾á€­á€žá€±á€¸á€•á€«á‹");
+    return;
+  }
+
+  setBusy(ttsBtn, true, "Generate Voice");
+
+  if (currentAudioUrl) {
+    URL.revokeObjectURL(currentAudioUrl);
+    currentAudioUrl = null;
+  }
+
+  audio.removeAttribute("src");
+  audio.load();
+
+  downloadMp3.style.display = "none";
+  downloadMp3.removeAttribute("href");
+
+  try {
+    setStatus(
+      "ðŸŽ™ï¸ Microsoft Myanmar voice á€‘á€¯á€á€ºá€”á€±á€•á€«á€žá€Šá€º...\\n" +
+      "Script á€¡á€›á€¾á€Šá€ºá€™á€»á€¬á€¸á€›á€„á€º Worker á€€ á€¡á€á€½á€„á€ºá€¸á€•á€­á€¯á€„á€ºá€¸á€™á€¾á€¬ á€¡á€œá€­á€¯á€¡á€œá€»á€±á€¬á€€á€ºá€á€½á€²á€•á€¼á€®á€¸ á€†á€€á€ºá€•á€±á€«á€„á€ºá€¸á€•á€±á€¸á€•á€«á€™á€šá€ºá‹"
+    );
+
+    const response = await fetch(WORKER_URL + "/tts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: text,
+        voice: voice.value,
+        speed: Number(speed.value),
+        pitch: Number(pitch.value)
+      })
+    });
+
+    const contentType = response.headers.get("content-type") || "";
+
+    if (!response.ok) {
+      let message = "HTTP " + response.status;
+
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        message = data.error || message;
+      } else {
+        const textError = await response.text();
+        if (textError) message = textError;
+      }
+
+      throw new Error(message);
+    }
+
+    const blob = await response.blob();
+
+    if (!blob.size) {
+      throw new Error("Audio file empty");
+    }
+
+    currentAudioUrl = URL.createObjectURL(blob);
+    audio.src = currentAudioUrl;
+    audio.load();
+
+    downloadMp3.href = currentAudioUrl;
+    downloadMp3.download = "myanmar-recap.mp3";
+    downloadMp3.style.display = "block";
+
+    setStatus(
+      "âœ… Voice á€•á€¼á€®á€¸á€•á€«á€•á€¼á€®á‹\\n" +
+      "á€¡á€±á€¬á€€á€ºá€€ Audio Player á€”á€²á€·á€”á€¬á€¸á€‘á€±á€¬á€„á€ºá€”á€­á€¯á€„á€ºá€•á€¼á€®á€¸ Download MP3 á€”á€²á€·á€žá€­á€™á€ºá€¸á€”á€­á€¯á€„á€ºá€•á€«á€á€šá€ºá‹"
+    );
+
+  } catch (error) {
+    setStatus("âŒ TTS Error:\\n" + error.message);
+  } finally {
+    setBusy(ttsBtn, false, "Generate Voice");
+  }
+});
 </script>
-
 </body>
 </html>
