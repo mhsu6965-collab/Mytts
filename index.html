@@ -23,52 +23,61 @@ function revoke(){if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=""}if(srtU
 fileInput.addEventListener("change",async()=>{const f=fileInput.files[0];if(!f)return;try{sourceText=await f.text();fileName.textContent=f.name+" ("+sourceText.length.toLocaleString()+" characters)";status(sourceText.trim()?"TXT ဖိုင်ဖတ်ပြီးပါပြီ။ Generate Long Form Recap ကိုနှိပ်ပါ။":"TXT ဖိုင်ထဲမှာ စာမရှိပါ။")}catch(e){sourceText="";status("TXT ဖိုင်ဖတ်မရပါ။\n"+e.message)}});
 recapButton.addEventListener("click",async()=>{if(!sourceText.trim()&&fileInput.files[0])try{sourceText=await fileInput.files[0].text()}catch(e){}if(!sourceText.trim()){status("အရင်ဆုံး TXT ဖိုင်တစ်ခုရွေးပါ။");return}busy(recapButton,true,"Generate Long Form Recap");scriptBox.value="";try{startProgress("Generating Myanmar Script",["TXT ဖိုင်ကို ဖတ်နေပါသည်...","ဇာတ်လမ်းတစ်ခုလုံးကို နားလည်နေပါသည်...","Character နှင့် Story ကို ချိတ်ဆက်နေပါသည်...","Myanmar dubbing script ရေးနေပါသည်...","Dialogue နှင့် Emotion တွေကို ပြန်လည်ပြင်ဆင်နေပါသည်...","Script ကို အပြီးသတ်နေပါသည်..."],5,92);status("Gemini က TXT ဖိုင်တစ်ခုလုံးကို ဖတ်ပြီး Long Form Myanmar Dubbing Script ရေးနေပါသည်...\n\nစာအရှည်ပေါ်မူတည်ပြီး အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်။");const r=await fetch(WORKER+"/recap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:sourceText})});const type=r.headers.get("content-type")||"";if(!type.includes("application/json"))throw new Error(await r.text());const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||("HTTP "+r.status));stop();scriptBox.value=d.text||"";showProgress("Generating Myanmar Script","Script အပြီးသတ်ပါပြီ။",100);status("Recap Script ပြီးပါပြီ။\nလိုအပ်ရင် Script ကိုပြင်ပြီး Generate Voice + SRT ကိုနှိပ်ပါ။");scriptBox.focus()}catch(e){stop();showProgress("Recap Error","Script ထုတ်မရပါ။",0);status("Recap Error\n\n"+e.message)}finally{busy(recapButton,false,"Generate Long Form Recap")}});
 function splitSubtitleText(text){
-const n=String(text||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/[ \t]+/g," ").trim();
-if(!n)return[];
-const result=[],max=95;
+  /* Myanmar-safe SRT splitting: never split a Unicode grapheme cluster. */
+  const n=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/[ \t]+/g,' ').trim();
+  if(!n)return[];
 
-function safeCut(s,limit){
-if(s.length<=limit)return s.length;
-for(const mark of ["။","!","?","၊",",",";","—","–"]){
-  const i=s.lastIndexOf(mark,limit);
-  if(i>=30)return i+1;
-}
-const ws=s.lastIndexOf(" ",limit);
-if(ws>=30)return ws+1;
+  const seg=(typeof Intl!=='undefined' && Intl.Segmenter)
+    ? new Intl.Segmenter('my',{granularity:'grapheme'}) : null;
 
-// Don't split between a Myanmar base character and its dependent marks.
-for(let i=limit;i>=35;i--){
-  const next=s[i];
-  if(!next)continue;
-  if(/[\u102B-\u103E\u1056-\u1059\u1060-\u106D\u1070-\u1074\u1075-\u108D\u108F-\u1091\u1094-\u1096\u1098-\u109D]/.test(next))continue;
-  if(/[\u1039\u103A]/.test(next))continue;
-  return i;
-}
-return limit;
-}
-
-function addChunks(s){
-s=s.trim();
-while(s.length>max){
-  const cut=safeCut(s,max);
-  if(cut<=0)break;
-  result.push(s.slice(0,cut).trim());
-  s=s.slice(cut).trim();
-}
-if(s)result.push(s);
-}
-
-const paras=n.split(/\n+/).map(x=>x.trim()).filter(Boolean);
-for(const para of paras){
-  let last=0,m;
-  const re=/[။!?]+/g;
-  while((m=re.exec(para))){
-    addChunks(para.slice(last,m.index+m[0].length));
-    last=m.index+m[0].length;
+  function gs(s){
+    if(seg)return Array.from(seg.segment(s),x=>x.segment);
+    return Array.from(s).reduce((a,ch)=>{
+      if(/\p{M}/u.test(ch)&&a.length)a[a.length-1]+=ch;
+      else a.push(ch);
+      return a;
+    },[]);
   }
-  addChunks(para.slice(last));
-}
-return result;
+
+  function splitLong(s,max){
+    const g=gs(s);
+    if(g.length<=max)return[s];
+    const out=[]; let pos=0;
+    while(pos<g.length){
+      let end=Math.min(pos+max,g.length);
+      if(end<g.length){
+        for(let i=end;i>pos+25;i--){
+          if(g[i-1]===' '||g[i-1]==='၊'){end=i;break;}
+        }
+      }
+      out.push(g.slice(pos,end).join('').trim());
+      pos=end;
+      while(pos<g.length&&g[pos]===' ')pos++;
+    }
+    return out.filter(Boolean);
+  }
+
+  /* Only real sentence endings create primary subtitle boundaries. */
+  const sentences=[]; let cur='';
+  for(const ch of n){
+    cur+=ch;
+    if(ch==='။'||ch==='!'||ch==='?'||ch==='\n'){
+      if(cur.trim()){sentences.push(cur.trim());cur='';}
+    }
+  }
+  if(cur.trim())sentences.push(cur.trim());
+
+  const result=[]; let buffer='';
+  for(const sentence of sentences){
+    for(const piece of splitLong(sentence,90)){
+      if(!buffer){buffer=piece;continue;}
+      const combined=buffer+' '+piece;
+      if(gs(combined).length<=90&&!/[။!?]$/.test(buffer)) buffer=combined;
+      else {result.push(buffer.trim());buffer=piece;}
+    }
+  }
+  if(buffer.trim())result.push(buffer.trim());
+  return result;
 }
 function fmt(sec){const ms=Math.max(0,Math.round(sec*1000)),h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000),x=ms%1000;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+","+String(x).padStart(3,"0")}
 function makeSrt(text,duration){const parts=splitSubtitleText(text);if(!parts.length||!duration)return"";const w=parts.map(p=>Math.max(1,p.replace(/\s/g,"").length)),total=w.reduce((a,b)=>a+b,0);let cur=0,out=[];for(let i=0;i<parts.length;i++){const len=duration*w[i]/total,start=cur,end=i===parts.length-1?duration:Math.min(duration,cur+len);out.push((i+1)+"\n"+fmt(start)+" --> "+fmt(end)+"\n"+parts[i]+"\n");cur=end}return out.join("\n")}
