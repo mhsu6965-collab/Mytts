@@ -5,171 +5,1083 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#111">
 <title>Myanmar Recap AI Voice</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;padding:10px;background:#f2f3f5;color:#171717;font-family:Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif}
-.app{max-width:620px;margin:auto;background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 20px #00000012}
-h1{text-align:center;font-size:23px;margin:3px 0 5px}
-.sub{text-align:center;color:#777;font-size:13px;margin-bottom:20px}
+
+body{
+  margin:0;
+  padding:10px;
+  background:#f2f3f5;
+  color:#171717;
+  font-family:Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif
+}
+
+.app{
+  max-width:620px;
+  margin:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 4px 20px #00000012
+}
+
+h1{
+  text-align:center;
+  font-size:23px;
+  margin:3px 0 5px
+}
+
+.sub{
+  text-align:center;
+  color:#777;
+  font-size:13px;
+  margin-bottom:20px
+}
+
 .sec{margin-top:20px}
-label{display:block;font-weight:700;font-size:16px;margin-bottom:8px}
-.filebox{border:2px dashed #ccc;border-radius:12px;padding:12px;background:#fafafa}
-input[type=file]{width:100%;font-size:14px}
-.filename{font-size:12px;color:#666;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-textarea{width:100%;min-height:260px;resize:vertical;border:1px solid #ccc;border-radius:12px;padding:12px;font:15px/1.8 Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif;outline:0}
-textarea:focus,select:focus{border-color:#111}
-select{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;background:#fff;font-size:16px}
-button{width:100%;padding:14px;margin-top:12px;border:0;border-radius:12px;background:#111;color:#fff;font-size:16px;font-weight:700}
-button:disabled{opacity:.55}
-.hint{font-size:12px;color:#777;line-height:1.5;margin-top:6px}
-.control{margin-top:18px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.value{background:#eee;border-radius:7px;padding:4px 10px;font-weight:700;font-size:14px}
-input[type=range]{width:100%;height:34px;accent-color:#111}
-.status{margin-top:16px;padding:12px;border-radius:11px;background:#f0f0f0;white-space:pre-wrap;font-size:14px;line-height:1.6;min-height:45px}
-audio{width:100%;margin-top:15px}
-.download{display:block;text-align:center;text-decoration:none;color:#111;background:#e9e9e9;border-radius:11px;padding:13px;margin-top:10px;font-weight:700}
-.hide{display:none!important}
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:16px;
+  margin-bottom:8px
+}
+
+.filebox{
+  border:2px dashed #ccc;
+  border-radius:12px;
+  padding:12px;
+  background:#fafafa
+}
+
+input[type=file]{
+  width:100%;
+  font-size:14px
+}
+
+.filename{
+  font-size:12px;
+  color:#666;
+  margin-top:7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
+textarea{
+  width:100%;
+  min-height:260px;
+  resize:vertical;
+  border:1px solid #ccc;
+  border-radius:12px;
+  padding:12px;
+  font:15px/1.8 Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif;
+  outline:0
+}
+
+textarea:focus,
+select:focus{
+  border-color:#111
+}
+
+select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:12px;
+  background:#fff;
+  font-size:16px
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:0;
+  border-radius:12px;
+  background:#111;
+  color:#fff;
+  font-size:16px;
+  font-weight:700
+}
+
+button:disabled{
+  opacity:.55
+}
+
+.hint{
+  font-size:12px;
+  color:#777;
+  line-height:1.5;
+  margin-top:6px
+}
+
+.control{
+  margin-top:18px
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:5px
+}
+
+.value{
+  background:#eee;
+  border-radius:7px;
+  padding:4px 10px;
+  font-weight:700;
+  font-size:14px
+}
+
+input[type=range]{
+  width:100%;
+  height:34px;
+  accent-color:#111
+}
+
+.status{
+  margin-top:16px;
+  padding:12px;
+  border-radius:11px;
+  background:#f0f0f0;
+  white-space:pre-wrap;
+  font-size:14px;
+  line-height:1.6;
+  min-height:45px
+}
+
+/* PROGRESS */
+
+.progressBox{
+  margin-top:14px;
+  padding:13px;
+  background:#f7f7f7;
+  border:1px solid #e5e5e5;
+  border-radius:12px;
+  display:none
+}
+
+.progressTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+  font-size:13px;
+  font-weight:700
+}
+
+.progressPercent{
+  font-size:15px
+}
+
+.progressTrack{
+  width:100%;
+  height:10px;
+  background:#ddd;
+  border-radius:20px;
+  overflow:hidden
+}
+
+.progressBar{
+  width:0%;
+  height:100%;
+  background:#111;
+  border-radius:20px;
+  transition:width .5s ease
+}
+
+.progressText{
+  margin-top:8px;
+  font-size:12px;
+  color:#666;
+  min-height:18px
+}
+
+audio{
+  width:100%;
+  margin-top:15px
+}
+
+.download{
+  display:block;
+  text-align:center;
+  text-decoration:none;
+  color:#111;
+  background:#e9e9e9;
+  border-radius:11px;
+  padding:13px;
+  margin-top:10px;
+  font-weight:700
+}
+
+.hide{
+  display:none!important
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
+
 <h1>Myanmar Recap AI Voice</h1>
-<div class="sub">TXT → Long Form Recap → Myanmar Voice</div>
+
+<div class="sub">
+TXT → Long Form Recap → Myanmar Voice
+</div>
+
 
 <div class="sec">
+
 <label>1. TXT File</label>
+
 <div class="filebox">
+
 <input id="txtFile" type="file" accept=".txt,text/plain">
-<div id="fileName" class="filename">TXT ဖိုင်ရွေးထားခြင်း မရှိသေးပါ</div>
-</div>
-<button id="recapButton" type="button">Generate Long Form Recap</button>
+
+<div id="fileName" class="filename">
+TXT ဖိုင်ရွေးထားခြင်း မရှိသေးပါ
 </div>
 
+</div>
+
+<button id="recapButton" type="button">
+Generate Long Form Recap
+</button>
+
+</div>
+
+
 <div class="sec">
+
 <label>2. Myanmar Recap Script</label>
-<textarea id="recapScript" placeholder="Generate Recap ကိုနှိပ်ပြီးနောက် Myanmar recap script ဒီနေရာမှာ ပေါ်လာပါမယ်။"></textarea>
-<div class="hint">Script အရှည်ကို ဒီနေရာမှာ မကန့်သတ်ထားပါ။ TTS လုပ်တဲ့အချိန် Worker က အလိုအလျောက် အပိုင်းခွဲပေးပါမယ်။</div>
+
+<textarea
+id="recapScript"
+placeholder="Generate Recap ကိုနှိပ်ပြီးနောက် Myanmar recap script ဒီနေရာမှာ ပေါ်လာပါမယ်။"
+></textarea>
+
+<div class="hint">
+Script အရှည်ကို ဒီနေရာမှာ မကန့်သတ်ထားပါ။
+TTS လုပ်တဲ့အချိန် Worker က အလိုအလျောက် အပိုင်းခွဲပေးပါမယ်။
 </div>
 
+</div>
+
+
 <div class="sec">
+
 <label>3. Voice</label>
+
 <select id="voiceSelect">
-<option value="thiha">Thiha — Male</option>
-<option value="nilar">Nilar — Female</option>
+
+<option value="thiha">
+Thiha — Male
+</option>
+
+<option value="nilar">
+Nilar — Female
+</option>
+
 </select>
 
-<div class="control">
-<div class="top"><b>Speed</b><span id="speedValue" class="value">0%</span></div>
-<input id="speedRange" type="range" min="-100" max="100" value="0" step="1">
-</div>
 
 <div class="control">
-<div class="top"><b>Pitch</b><span id="pitchValue" class="value">0%</span></div>
-<input id="pitchRange" type="range" min="-100" max="100" value="0" step="1">
+
+<div class="top">
+<b>Speed</b>
+<span id="speedValue" class="value">0%</span>
 </div>
 
-<button id="voiceButton" type="button">Generate Voice</button>
+<input
+id="speedRange"
+type="range"
+min="-100"
+max="100"
+value="0"
+step="1"
+>
+
 </div>
 
-<div id="status" class="status">Ready. TXT ဖိုင်ရွေးပြီး Generate Recap ကိုနှိပ်ပါ။</div>
 
-<audio id="audioPlayer" controls class="hide"></audio>
-<a id="mp3Download" class="download hide" href="#">Download MP3</a>
+<div class="control">
+
+<div class="top">
+<b>Pitch</b>
+<span id="pitchValue" class="value">0%</span>
 </div>
+
+<input
+id="pitchRange"
+type="range"
+min="-100"
+max="100"
+value="0"
+step="1"
+>
+
+</div>
+
+
+<button id="voiceButton" type="button">
+Generate Voice
+</button>
+
+</div>
+
+
+<!-- PROGRESS -->
+
+<div id="progressBox" class="progressBox">
+
+<div class="progressTop">
+
+<span id="progressTitle">
+Processing
+</span>
+
+<span id="progressPercent" class="progressPercent">
+0%
+</span>
+
+</div>
+
+<div class="progressTrack">
+
+<div id="progressBar" class="progressBar"></div>
+
+</div>
+
+<div id="progressText" class="progressText">
+Ready...
+</div>
+
+</div>
+
+
+<div id="status" class="status">
+Ready. TXT ဖိုင်ရွေးပြီး Generate Recap ကိုနှိပ်ပါ။
+</div>
+
+
+<audio
+id="audioPlayer"
+controls
+class="hide"
+></audio>
+
+
+<a
+id="mp3Download"
+class="download hide"
+href="#"
+>
+Download MP3
+</a>
+
+</div>
+
 
 <script>
+
 (function(){
+
 "use strict";
 
-const WORKER="https://myanmar-tts.thetphyo77790.workers.dev";
 
-const fileInput=document.getElementById("txtFile");
-const fileName=document.getElementById("fileName");
-const recapButton=document.getElementById("recapButton");
-const scriptBox=document.getElementById("recapScript");
-const voiceSelect=document.getElementById("voiceSelect");
-const speed=document.getElementById("speedRange");
-const speedValue=document.getElementById("speedValue");
-const pitch=document.getElementById("pitchRange");
-const pitchValue=document.getElementById("pitchValue");
-const voiceButton=document.getElementById("voiceButton");
-const statusBox=document.getElementById("status");
-const player=document.getElementById("audioPlayer");
-const download=document.getElementById("mp3Download");
+const WORKER =
+"https://myanmar-tts.thetphyo77790.workers.dev";
 
-let sourceText="";
-let audioUrl="";
 
-function status(text){statusBox.textContent=text}
-function busy(btn,on,label){btn.disabled=on;btn.textContent=on?"လုပ်ဆောင်နေပါသည်...":label}
-function sliders(){speedValue.textContent=speed.value+"%";pitchValue.textContent=pitch.value+"%"}
+const fileInput =
+document.getElementById("txtFile");
 
-speed.addEventListener("input",sliders);
-pitch.addEventListener("input",sliders);
+const fileName =
+document.getElementById("fileName");
+
+const recapButton =
+document.getElementById("recapButton");
+
+const scriptBox =
+document.getElementById("recapScript");
+
+const voiceSelect =
+document.getElementById("voiceSelect");
+
+const speed =
+document.getElementById("speedRange");
+
+const speedValue =
+document.getElementById("speedValue");
+
+const pitch =
+document.getElementById("pitchRange");
+
+const pitchValue =
+document.getElementById("pitchValue");
+
+const voiceButton =
+document.getElementById("voiceButton");
+
+const statusBox =
+document.getElementById("status");
+
+const player =
+document.getElementById("audioPlayer");
+
+const download =
+document.getElementById("mp3Download");
+
+
+const progressBox =
+document.getElementById("progressBox");
+
+const progressTitle =
+document.getElementById("progressTitle");
+
+const progressPercent =
+document.getElementById("progressPercent");
+
+const progressBar =
+document.getElementById("progressBar");
+
+const progressText =
+document.getElementById("progressText");
+
+
+let sourceText = "";
+
+let audioUrl = "";
+
+let progressTimer = null;
+
+
+/* STATUS */
+
+function status(text){
+
+  statusBox.textContent = text;
+
+}
+
+
+/* BUTTON */
+
+function busy(btn,on,label){
+
+  btn.disabled = on;
+
+  btn.textContent =
+    on
+      ? "လုပ်ဆောင်နေပါသည်..."
+      : label;
+
+}
+
+
+/* SLIDERS */
+
+function sliders(){
+
+  speedValue.textContent =
+    speed.value + "%";
+
+  pitchValue.textContent =
+    pitch.value + "%";
+
+}
+
+speed.addEventListener(
+  "input",
+  sliders
+);
+
+pitch.addEventListener(
+  "input",
+  sliders
+);
+
 sliders();
 
-fileInput.addEventListener("change",async function(){
- const f=fileInput.files[0];
- if(!f)return;
- try{
-  sourceText=await f.text();
-  fileName.textContent=f.name+" ("+sourceText.length.toLocaleString()+" characters)";
-  status(sourceText.trim()?"TXT ဖိုင်ဖတ်ပြီးပါပြီ။ Generate Long Form Recap ကိုနှိပ်ပါ။":"TXT ဖိုင်ထဲမှာ စာမရှိပါ။");
- }catch(e){sourceText="";status("TXT ဖိုင်ဖတ်မရပါ။\n"+e.message)}
-});
 
-recapButton.addEventListener("click",async function(){
- if(!sourceText.trim()&&fileInput.files[0]){
-  try{sourceText=await fileInput.files[0].text()}catch(e){}
- }
- if(!sourceText.trim()){status("အရင်ဆုံး TXT ဖိုင်တစ်ခုရွေးပါ။");return}
+/* PROGRESS */
 
- busy(recapButton,true,"Generate Long Form Recap");
- try{
-  status("Gemini က ဇာတ်လမ်းတစ်ခုလုံးကို နားလည်ပြီး Long Form Myanmar Recap ရေးနေပါသည်...\n\nစာအရှည်ပေါ်မူတည်ပြီး အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်။");
-  const r=await fetch(WORKER+"/recap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:sourceText})});
-  const type=r.headers.get("content-type")||"";
-  if(!type.includes("application/json"))throw new Error(await r.text());
-  const d=await r.json();
-  if(!r.ok||!d.success)throw new Error(d.error||("HTTP "+r.status));
-  scriptBox.value=d.text||"";
-  status("Recap Script ပြီးပါပြီ။\nလိုအပ်ရင် Script ကိုပြင်ပြီး Generate Voice ကိုနှိပ်ပါ။");
-  scriptBox.focus();
- }catch(e){status("Recap Error\n\n"+e.message)}
- finally{busy(recapButton,false,"Generate Long Form Recap")}
-});
+function showProgress(title,text,value){
 
-voiceButton.addEventListener("click",async function(){
- const text=scriptBox.value.trim();
- if(!text){status("Myanmar Recap Script မရှိသေးပါ။ အရင် Generate Long Form Recap လုပ်ပါ။");return}
+  progressBox.style.display = "block";
 
- busy(voiceButton,true,"Generate Voice");
- if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=""}
- player.pause();player.removeAttribute("src");player.load();player.classList.add("hide");
- download.classList.add("hide");download.removeAttribute("href");
+  progressTitle.textContent =
+    title;
 
- try{
-  status("Microsoft Myanmar Voice ထုတ်နေပါသည်...\n\nScript ရှည်ရင် Worker က အတွင်းပိုင်းမှာ အလိုအလျောက်ခွဲပြီး MP3 တစ်ခုအဖြစ် ပြန်ပေါင်းပေးပါမယ်။");
-  const r=await fetch(WORKER+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text,voice:voiceSelect.value,speed:Number(speed.value),pitch:Number(pitch.value)})});
-  if(!r.ok){
-   let msg="HTTP "+r.status;
-   const type=r.headers.get("content-type")||"";
-   if(type.includes("application/json")){const d=await r.json();msg=d.error||msg}
-   else{const t=await r.text();if(t)msg=t}
-   throw new Error(msg);
+  progressText.textContent =
+    text;
+
+  const safe =
+    Math.max(
+      0,
+      Math.min(100,Number(value))
+    );
+
+  progressPercent.textContent =
+    Math.round(safe) + "%";
+
+  progressBar.style.width =
+    safe + "%";
+
+}
+
+
+function hideProgress(){
+
+  progressBox.style.display =
+    "none";
+
+  progressBar.style.width =
+    "0%";
+
+  progressPercent.textContent =
+    "0%";
+
+}
+
+
+function stopProgressTimer(){
+
+  if(progressTimer){
+
+    clearInterval(progressTimer);
+
+    progressTimer = null;
+
   }
-  const blob=await r.blob();
-  if(!blob.size)throw new Error("Audio file empty");
-  audioUrl=URL.createObjectURL(blob);
-  player.src=audioUrl;player.classList.remove("hide");player.load();
-  download.href=audioUrl;download.download="myanmar-recap.mp3";download.classList.remove("hide");
-  status("Voice ပြီးပါပြီ။ အောက်က Player နဲ့ နားထောင်နိုင်ပါတယ်။");
- }catch(e){status("TTS Error\n\n"+e.message)}
- finally{busy(voiceButton,false,"Generate Voice")}
-});
+
+}
+
+
+/*
+  Smooth progress animation.
+
+  API က real-time percentage မပေးတဲ့အတွက်
+  Gemini/TTS ပြီးတဲ့အထိ သင့်တော်တဲ့ stage
+  percentage ကို ပြပေးပါတယ်။
+*/
+
+function startProgressSimulation(
+  title,
+  startValue,
+  maxValue,
+  messages
+){
+
+  stopProgressTimer();
+
+  let value = startValue;
+
+  let messageIndex = 0;
+
+  showProgress(
+    title,
+    messages[0],
+    value
+  );
+
+  progressTimer =
+    setInterval(function(){
+
+      if(value < maxValue){
+
+        value +=
+          Math.random() * 2.5;
+
+        if(value > maxValue){
+
+          value = maxValue;
+
+        }
+
+        if(
+          value > startValue + 8 &&
+          messageIndex <
+          messages.length - 1
+        ){
+
+          messageIndex++;
+
+        }
+
+        showProgress(
+          title,
+          messages[messageIndex],
+          value
+        );
+
+      }
+
+    },700);
+
+}
+
+
+/* FILE */
+
+fileInput.addEventListener(
+  "change",
+  async function(){
+
+    const f =
+      fileInput.files[0];
+
+    if(!f)return;
+
+    try{
+
+      sourceText =
+        await f.text();
+
+      fileName.textContent =
+        f.name +
+        " (" +
+        sourceText.length.toLocaleString() +
+        " characters)";
+
+      if(sourceText.trim()){
+
+        status(
+          "TXT ဖိုင်ဖတ်ပြီးပါပြီ။ Generate Long Form Recap ကိုနှိပ်ပါ။"
+        );
+
+      }else{
+
+        status(
+          "TXT ဖိုင်ထဲမှာ စာမရှိပါ။"
+        );
+
+      }
+
+    }catch(e){
+
+      sourceText = "";
+
+      status(
+        "TXT ဖိုင်ဖတ်မရပါ။\n" +
+        e.message
+      );
+
+    }
+
+  }
+);
+
+
+/* RECAP */
+
+recapButton.addEventListener(
+  "click",
+  async function(){
+
+    if(
+      !sourceText.trim() &&
+      fileInput.files[0]
+    ){
+
+      try{
+
+        sourceText =
+          await fileInput.files[0].text();
+
+      }catch(e){}
+
+    }
+
+
+    if(!sourceText.trim()){
+
+      status(
+        "အရင်ဆုံး TXT ဖိုင်တစ်ခုရွေးပါ။"
+      );
+
+      return;
+
+    }
+
+
+    busy(
+      recapButton,
+      true,
+      "Generate Long Form Recap"
+    );
+
+
+    scriptBox.value = "";
+
+
+    try{
+
+      startProgressSimulation(
+        "Generating Myanmar Script",
+        5,
+        92,
+        [
+          "TXT ဖိုင်ကို ဖတ်နေပါသည်...",
+          "ဇာတ်လမ်းတစ်ခုလုံးကို နားလည်နေပါသည်...",
+          "Character နှင့် Story ကို ချိတ်ဆက်နေပါသည်...",
+          "Myanmar dubbing script ရေးနေပါသည်...",
+          "Dialogue နှင့် Emotion တွေကို ပြန်လည်ပြင်ဆင်နေပါသည်...",
+          "Script ကို အပြီးသတ်နေပါသည်..."
+        ]
+      );
+
+
+      status(
+        "Gemini က TXT ဖိုင်တစ်ခုလုံးကို ဖတ်ပြီး Long Form Myanmar Dubbing Script ရေးနေပါသည်...\n\n" +
+        "စာအရှည်ပေါ်မူတည်ပြီး အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်။"
+      );
+
+
+      const r =
+        await fetch(
+          WORKER + "/recap",
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+              text:sourceText
+            })
+          }
+        );
+
+
+      const type =
+        r.headers.get(
+          "content-type"
+        ) || "";
+
+
+      if(!type.includes("application/json")){
+
+        throw new Error(
+          await r.text()
+        );
+
+      }
+
+
+      const d =
+        await r.json();
+
+
+      if(!r.ok || !d.success){
+
+        throw new Error(
+          d.error ||
+          ("HTTP " + r.status)
+        );
+
+      }
+
+
+      stopProgressTimer();
+
+
+      showProgress(
+        "Generating Myanmar Script",
+        "Script အပြီးသတ်ပါပြီ။",
+        100
+      );
+
+
+      scriptBox.value =
+        d.text || "";
+
+
+      status(
+        "Recap Script ပြီးပါပြီ။\n\n" +
+        "လိုအပ်ရင် Script ကိုပြင်ပြီး Generate Voice ကိုနှိပ်ပါ။"
+      );
+
+
+      scriptBox.focus();
+
+
+    }catch(e){
+
+      stopProgressTimer();
+
+      showProgress(
+        "Recap Error",
+        "Script ထုတ်မရပါ။",
+        0
+      );
+
+      status(
+        "Recap Error\n\n" +
+        e.message
+      );
+
+
+    }finally{
+
+      busy(
+        recapButton,
+        false,
+        "Generate Long Form Recap"
+      );
+
+    }
+
+  }
+);
+
+
+/* VOICE */
+
+voiceButton.addEventListener(
+  "click",
+  async function(){
+
+    const text =
+      scriptBox.value.trim();
+
+
+    if(!text){
+
+      status(
+        "Myanmar Recap Script မရှိသေးပါ။ အရင် Generate Long Form Recap လုပ်ပါ။"
+      );
+
+      return;
+
+    }
+
+
+    busy(
+      voiceButton,
+      true,
+      "Generate Voice"
+    );
+
+
+    if(audioUrl){
+
+      URL.revokeObjectURL(
+        audioUrl
+      );
+
+      audioUrl = "";
+
+    }
+
+
+    player.pause();
+
+    player.removeAttribute(
+      "src"
+    );
+
+    player.load();
+
+    player.classList.add(
+      "hide"
+    );
+
+
+    download.classList.add(
+      "hide"
+    );
+
+    download.removeAttribute(
+      "href"
+    );
+
+
+    try{
+
+      startProgressSimulation(
+        "Generating Myanmar Voice",
+        5,
+        94,
+        [
+          "Script ကို Voice အတွက် ပြင်ဆင်နေပါသည်...",
+          "Microsoft Myanmar Voice ကို ဆက်သွယ်နေပါသည်...",
+          "Voice audio ကို ထုတ်နေပါသည်...",
+          "Script ရှည်လျားမှုအလိုက် Audio အပိုင်းတွေကို လုပ်ဆောင်နေပါသည်...",
+          "MP3 Audio ကို ပြန်လည်ပေါင်းစပ်နေပါသည်...",
+          "MP3 ကို အပြီးသတ်နေပါသည်..."
+        ]
+      );
+
+
+      status(
+        "Microsoft Myanmar Voice ထုတ်နေပါသည်...\n\n" +
+        "Script ရှည်ရင် Worker က အတွင်းပိုင်းမှာ အလိုအလျောက် အပိုင်းခွဲပြီး MP3 တစ်ခုအဖြစ် ပြန်ပေါင်းပေးပါမယ်။"
+      );
+
+
+      const r =
+        await fetch(
+          WORKER + "/tts",
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+              text:text,
+
+              voice:
+                voiceSelect.value,
+
+              speed:
+                Number(speed.value),
+
+              pitch:
+                Number(pitch.value)
+
+            })
+
+          }
+        );
+
+
+      if(!r.ok){
+
+        let msg =
+          "HTTP " + r.status;
+
+        const type =
+          r.headers.get(
+            "content-type"
+          ) || "";
+
+
+        if(
+          type.includes(
+            "application/json"
+          )
+        ){
+
+          const d =
+            await r.json();
+
+          msg =
+            d.error || msg;
+
+        }else{
+
+          const t =
+            await r.text();
+
+          if(t)msg = t;
+
+        }
+
+
+        throw new Error(msg);
+
+      }
+
+
+      const blob =
+        await r.blob();
+
+
+      if(!blob.size){
+
+        throw new Error(
+          "Audio file empty"
+        );
+
+      }
+
+
+      stopProgressTimer();
+
+
+      audioUrl =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      player.src =
+        audioUrl;
+
+      player.classList.remove(
+        "hide"
+      );
+
+      player.load();
+
+
+      download.href =
+        audioUrl;
+
+      download.download =
+        "myanmar-recap.mp3";
+
+      download.classList.remove(
+        "hide"
+      );
+
+
+      showProgress(
+        "Generating Myanmar Voice",
+        "Voice အပြီးသတ်ပါပြီ။",
+        100
+      );
+
+
+      status(
+        "Voice ပြီးပါပြီ။\n\n" +
+        "အောက်က Player နဲ့ နားထောင်နိုင်ပါတယ်။"
+      );
+
+
+    }catch(e){
+
+      stopProgressTimer();
+
+      showProgress(
+        "TTS Error",
+        "Voice ထုတ်မရပါ။",
+        0
+      );
+
+      status(
+        "TTS Error\n\n" +
+        e.message
+      );
+
+
+    }finally{
+
+      busy(
+        voiceButton,
+        false,
+        "Generate Voice"
+      );
+
+    }
+
+  }
+);
+
 
 })();
 </script>
+
 </body>
 </html>
