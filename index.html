@@ -22,7 +22,54 @@ function stop(){if(progressTimer){clearInterval(progressTimer);progressTimer=nul
 function revoke(){if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=""}if(srtUrl){URL.revokeObjectURL(srtUrl);srtUrl=""}}
 fileInput.addEventListener("change",async()=>{const f=fileInput.files[0];if(!f)return;try{sourceText=await f.text();fileName.textContent=f.name+" ("+sourceText.length.toLocaleString()+" characters)";status(sourceText.trim()?"TXT ဖိုင်ဖတ်ပြီးပါပြီ။ Generate Long Form Recap ကိုနှိပ်ပါ။":"TXT ဖိုင်ထဲမှာ စာမရှိပါ။")}catch(e){sourceText="";status("TXT ဖိုင်ဖတ်မရပါ။\n"+e.message)}});
 recapButton.addEventListener("click",async()=>{if(!sourceText.trim()&&fileInput.files[0])try{sourceText=await fileInput.files[0].text()}catch(e){}if(!sourceText.trim()){status("အရင်ဆုံး TXT ဖိုင်တစ်ခုရွေးပါ။");return}busy(recapButton,true,"Generate Long Form Recap");scriptBox.value="";try{startProgress("Generating Myanmar Script",["TXT ဖိုင်ကို ဖတ်နေပါသည်...","ဇာတ်လမ်းတစ်ခုလုံးကို နားလည်နေပါသည်...","Character နှင့် Story ကို ချိတ်ဆက်နေပါသည်...","Myanmar dubbing script ရေးနေပါသည်...","Dialogue နှင့် Emotion တွေကို ပြန်လည်ပြင်ဆင်နေပါသည်...","Script ကို အပြီးသတ်နေပါသည်..."],5,92);status("Gemini က TXT ဖိုင်တစ်ခုလုံးကို ဖတ်ပြီး Long Form Myanmar Dubbing Script ရေးနေပါသည်...\n\nစာအရှည်ပေါ်မူတည်ပြီး အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်။");const r=await fetch(WORKER+"/recap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:sourceText})});const type=r.headers.get("content-type")||"";if(!type.includes("application/json"))throw new Error(await r.text());const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||("HTTP "+r.status));stop();scriptBox.value=d.text||"";showProgress("Generating Myanmar Script","Script အပြီးသတ်ပါပြီ။",100);status("Recap Script ပြီးပါပြီ။\nလိုအပ်ရင် Script ကိုပြင်ပြီး Generate Voice + SRT ကိုနှိပ်ပါ။");scriptBox.focus()}catch(e){stop();showProgress("Recap Error","Script ထုတ်မရပါ။",0);status("Recap Error\n\n"+e.message)}finally{busy(recapButton,false,"Generate Long Form Recap")}});
-function splitSubtitleText(text){const n=String(text||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\s+/g," ").trim();if(!n)return[];const sentences=[],result=[];let cur="";for(const ch of n){cur+=ch;if(/[။!?]/.test(ch)||cur.length>=95){sentences.push(cur.trim());cur=""}}if(cur.trim())sentences.push(cur.trim());for(const s of sentences){if(s.length<=95)result.push(s);else{let rest=s;while(rest.length>95){let cut=rest.lastIndexOf("၊",95);if(cut<35)cut=rest.lastIndexOf(" ",95);if(cut<35)cut=95;result.push(rest.slice(0,cut+1).trim());rest=rest.slice(cut+1).trim()}if(rest)result.push(rest)}}return result}
+function splitSubtitleText(text){
+const n=String(text||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/[ \t]+/g," ").trim();
+if(!n)return[];
+const result=[],max=95;
+
+function safeCut(s,limit){
+if(s.length<=limit)return s.length;
+for(const mark of ["။","!","?","၊",",",";","—","–"]){
+  const i=s.lastIndexOf(mark,limit);
+  if(i>=30)return i+1;
+}
+const ws=s.lastIndexOf(" ",limit);
+if(ws>=30)return ws+1;
+
+// Don't split between a Myanmar base character and its dependent marks.
+for(let i=limit;i>=35;i--){
+  const next=s[i];
+  if(!next)continue;
+  if(/[\u102B-\u103E\u1056-\u1059\u1060-\u106D\u1070-\u1074\u1075-\u108D\u108F-\u1091\u1094-\u1096\u1098-\u109D]/.test(next))continue;
+  if(/[\u1039\u103A]/.test(next))continue;
+  return i;
+}
+return limit;
+}
+
+function addChunks(s){
+s=s.trim();
+while(s.length>max){
+  const cut=safeCut(s,max);
+  if(cut<=0)break;
+  result.push(s.slice(0,cut).trim());
+  s=s.slice(cut).trim();
+}
+if(s)result.push(s);
+}
+
+const paras=n.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+for(const para of paras){
+  let last=0,m;
+  const re=/[။!?]+/g;
+  while((m=re.exec(para))){
+    addChunks(para.slice(last,m.index+m[0].length));
+    last=m.index+m[0].length;
+  }
+  addChunks(para.slice(last));
+}
+return result;
+}
 function fmt(sec){const ms=Math.max(0,Math.round(sec*1000)),h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000),x=ms%1000;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+","+String(x).padStart(3,"0")}
 function makeSrt(text,duration){const parts=splitSubtitleText(text);if(!parts.length||!duration)return"";const w=parts.map(p=>Math.max(1,p.replace(/\s/g,"").length)),total=w.reduce((a,b)=>a+b,0);let cur=0,out=[];for(let i=0;i<parts.length;i++){const len=duration*w[i]/total,start=cur,end=i===parts.length-1?duration:Math.min(duration,cur+len);out.push((i+1)+"\n"+fmt(start)+" --> "+fmt(end)+"\n"+parts[i]+"\n");cur=end}return out.join("\n")}
 voiceButton.addEventListener("click",async()=>{const text=scriptBox.value.trim();if(!text){status("Myanmar Recap Script မရှိသေးပါ။ အရင် Generate Long Form Recap လုပ်ပါ။");return}busy(voiceButton,true,"Generate Voice + SRT");revoke();player.pause();player.removeAttribute("src");player.load();player.classList.add("hide");downloads.classList.add("hide");try{startProgress("Generating Myanmar Voice",["Script ကို Voice အတွက် ပြင်ဆင်နေပါသည်...","Microsoft Myanmar Voice ကို ဆက်သွယ်နေပါသည်...","Voice audio ကို ထုတ်နေပါသည်...","Script ရှည်လျားမှုအလိုက် Audio ကို လုပ်ဆောင်နေပါသည်...","MP3 Audio ကို ပြန်လည်ပေါင်းစပ်နေပါသည်...","MP3 နဲ့ SRT ကို အပြီးသတ်နေပါသည်..."],5,94);status("Microsoft Myanmar Voice ထုတ်နေပါသည်...\n\nပြီးသွားရင် MP3 နဲ့ SRT နှစ်ခုလုံး ရပါမယ်။");const r=await fetch(WORKER+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text,voice:voiceSelect.value,speed:Number(speed.value),pitch:Number(pitch.value)})});if(!r.ok){let msg="HTTP "+r.status;const type=r.headers.get("content-type")||"";if(type.includes("application/json")){const d=await r.json();msg=d.error||msg}else{const t=await r.text();if(t)msg=t}throw new Error(msg)}const blob=await r.blob();if(!blob.size)throw new Error("Audio file empty");audioUrl=URL.createObjectURL(blob);player.src=audioUrl;player.classList.remove("hide");player.load();await new Promise(resolve=>{if(player.readyState>=1){resolve();return}player.addEventListener("loadedmetadata",resolve,{once:true});setTimeout(resolve,3000)});const duration=Number(player.duration);if(!Number.isFinite(duration)||duration<=0)throw new Error("MP3 duration ကို မဖတ်နိုင်ပါ။");const srt=makeSrt(text,duration);if(!srt)throw new Error("SRT file မဖန်တီးနိုင်ပါ။");srtUrl=URL.createObjectURL(new Blob(["\uFEFF"+srt],{type:"application/x-subrip;charset=utf-8"}));mp3Download.href=audioUrl;mp3Download.download="myanmar-recap.mp3";srtDownload.href=srtUrl;srtDownload.download="myanmar-recap.srt";downloads.classList.remove("hide");stop();showProgress("Generating Myanmar Voice","MP3 + SRT အပြီးသတ်ပါပြီ။",100);status("Voice ပြီးပါပြီ။\n\nMP3 နဲ့ SRT နှစ်ခုလုံးကို အောက်ကခလုတ်တွေကနေ Download လုပ်နိုင်ပါတယ်။")}catch(e){stop();showProgress("TTS Error","Voice/SRT ထုတ်မရပါ။",0);status("TTS Error\n\n"+e.message)}finally{busy(voiceButton,false,"Generate Voice + SRT")}});
