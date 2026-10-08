@@ -1,86 +1,1773 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#111"><title>Myanmar Recap AI Voice</title>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Myanmar AI Video Dubbing</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;padding:10px;background:#f2f3f5;color:#171717;font-family:Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif}.app{max-width:620px;margin:auto;background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 20px #00000012}h1{text-align:center;font-size:23px;margin:3px 0 5px}.sub{text-align:center;color:#777;font-size:13px;margin-bottom:20px}.sec{margin-top:20px}label{display:block;font-weight:700;font-size:16px;margin-bottom:8px}.filebox{border:2px dashed #ccc;border-radius:12px;padding:12px;background:#fafafa}input[type=file]{width:100%;font-size:14px}.filename{font-size:12px;color:#666;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}textarea{width:100%;min-height:260px;resize:vertical;border:1px solid #ccc;border-radius:12px;padding:12px;font:15px/1.8 Arial,"Noto Sans Myanmar","Myanmar Text",sans-serif;outline:0}textarea:focus,select:focus{border-color:#111}select{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;background:#fff;font-size:16px}button{width:100%;padding:14px;margin-top:12px;border:0;border-radius:12px;background:#111;color:#fff;font-size:16px;font-weight:700}button:disabled{opacity:.55}.hint{font-size:12px;color:#777;line-height:1.5;margin-top:6px}.control{margin-top:18px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.value{background:#eee;border-radius:7px;padding:4px 10px;font-weight:700;font-size:14px}input[type=range]{width:100%;height:34px;accent-color:#111}.status{margin-top:16px;padding:12px;border-radius:11px;background:#f0f0f0;white-space:pre-wrap;font-size:14px;line-height:1.6;min-height:45px}.progressBox{margin-top:14px;padding:13px;background:#f7f7f7;border:1px solid #e5e5e5;border-radius:12px;display:none}.progressTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;font-weight:700}.progressPercent{font-size:15px}.progressTrack{width:100%;height:10px;background:#ddd;border-radius:20px;overflow:hidden}.progressBar{width:0%;height:100%;background:#111;border-radius:20px;transition:width .5s ease}.progressText{margin-top:8px;font-size:12px;color:#666;min-height:18px}.downloads{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.download{display:block;text-align:center;text-decoration:none;color:#111;background:#e9e9e9;border-radius:11px;padding:13px;font-weight:700}.hide{display:none!important}@media(max-width:430px){.downloads{grid-template-columns:1fr}}
-</style></head><body><div class="app">
-<h1>Myanmar Recap AI Voice</h1><div class="sub">TXT → Long Form Recap → Myanmar Voice + SRT</div>
-<div class="sec"><label>1. TXT File</label><div class="filebox"><input id="txtFile" type="file" accept=".txt,text/plain"><div id="fileName" class="filename">TXT ဖိုင်ရွေးထားခြင်း မရှိသေးပါ</div></div><button id="recapButton" type="button">Generate Long Form Recap</button></div>
-<div class="sec"><label>2. Myanmar Recap Script</label><textarea id="recapScript" placeholder="Generate Recap ကိုနှိပ်ပြီးနောက် Myanmar recap script ဒီနေရာမှာ ပေါ်လာပါမယ်။"></textarea><div class="hint">Script အရှည်ကို ဒီနေရာမှာ မကန့်သတ်ထားပါ။ TTS လုပ်တဲ့အချိန် Worker က အလိုအလျောက် အပိုင်းခွဲပေးပါမယ်။</div></div>
-<div class="sec"><label>3. Voice</label><select id="voiceSelect"><option value="Thiha">Thiha — Male</option><option value="Nilar">Nilar — Female</option></select><div class="control"><div class="top"><b>Speed</b><span id="speedValue" class="value">0%</span></div><input id="speedRange" type="range" min="-100" max="100" value="0" step="1"></div><div class="control"><div class="top"><b>Pitch</b><span id="pitchValue" class="value">0%</span></div><input id="pitchRange" type="range" min="-100" max="100" value="0" step="1"></div><button id="voiceButton" type="button">Generate Voice + SRT</button></div>
-<div id="progressBox" class="progressBox"><div class="progressTop"><span id="progressTitle">Processing</span><span id="progressPercent" class="progressPercent">0%</span></div><div class="progressTrack"><div id="progressBar" class="progressBar"></div></div><div id="progressText" class="progressText">Ready...</div></div>
-<div id="status" class="status">Ready. TXT ဖိုင်ရွေးပြီး Generate Recap ကိုနှိပ်ပါ။</div><audio id="audioPlayer" controls class="hide"></audio><div id="downloads" class="downloads hide"><a id="mp3Download" class="download" href="#">Download MP3</a><a id="srtDownload" class="download" href="#">Download SRT</a></div>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f5f7;
+  color: #202124;
+  font-family:
+    Arial,
+    "Noto Sans Myanmar",
+    sans-serif;
+}
+
+.container {
+  width: min(900px, 94%);
+  margin: 20px auto 50px;
+}
+
+.header {
+  background: #111827;
+  color: white;
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0 0 7px;
+  font-size: 25px;
+}
+
+.header p {
+  margin: 0;
+  opacity: .82;
+  line-height: 1.6;
+}
+
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow:
+    0 3px 14px rgba(0,0,0,.07);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #d5d9df;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 17px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary {
+  background: #111827;
+  color: white;
+}
+
+.secondary {
+  background: #e8edf3;
+  color: #111827;
+}
+
+.success {
+  background: #16794c;
+  color: white;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+#videoInfo {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f6f7f9;
+  border-radius: 10px;
+  display: none;
+  line-height: 1.7;
+}
+
+.progressBox {
+  display: none;
+  margin-top: 14px;
+}
+
+.progressText {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.progress {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0%;
+  background: #111827;
+  transition: width .3s;
+}
+
+textarea {
+  width: 100%;
+  min-height: 430px;
+  resize: vertical;
+  padding: 15px;
+  border: 1px solid #d5d9df;
+  border-radius: 13px;
+  font-family:
+    Arial,
+    "Noto Sans Myanmar",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.9;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #111827;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.row > * {
+  flex: 1;
+}
+
+select {
+  width: 100%;
+  padding: 13px;
+  border-radius: 11px;
+  border: 1px solid #d5d9df;
+  background: white;
+  font-size: 15px;
+}
+
+.rangeRow {
+  margin-top: 18px;
+}
+
+.rangeTitle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.value {
+  font-weight: bold;
+}
+
+.status {
+  padding: 13px;
+  border-radius: 11px;
+  margin-top: 12px;
+  display: none;
+  line-height: 1.6;
+}
+
+.status.info {
+  display: block;
+  background: #eef4ff;
+  color: #174ea6;
+}
+
+.status.success {
+  display: block;
+  background: #eaf8f0;
+  color: #17633d;
+}
+
+.status.error {
+  display: block;
+  background: #fff0f0;
+  color: #a51d2d;
+}
+
+.downloads {
+  display: none;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.downloads a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 13px 17px;
+  border-radius: 11px;
+  font-weight: 600;
+  background: #111827;
+  color: white;
+}
+
+.small {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.count {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+audio {
+  width: 100%;
+  margin-top: 14px;
+  display: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+
+  .container {
+    width: 95%;
+    margin-top: 10px;
+  }
+
+  .header {
+    padding: 18px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  textarea {
+    min-height: 380px;
+    font-size: 15px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .row {
+    display: block;
+  }
+
+  .row > * {
+    width: 100%;
+    margin-bottom: 9px;
+  }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🎬 Myanmar AI Video Dubbing</h1>
+    <p>
+      Video ကို upload လုပ်ပြီး Gemini နဲ့
+      မြန်မာ Movie Recap Script ထုတ်နိုင်ပါတယ်။
+    </p>
+  </div>
+
+
+  <!-- VIDEO -->
+
+  <div class="card">
+
+    <h2>① Video ရွေးပါ</h2>
+
+    <input
+      id="videoInput"
+      type="file"
+      accept="video/*">
+
+    <div id="videoInfo"></div>
+
+    <div class="progressBox" id="videoProgressBox">
+
+      <div
+        class="progressText"
+        id="videoProgressText">
+        Gemini ကို ပို့နေပါတယ်...
+      </div>
+
+      <div class="progress">
+        <div
+          class="progressBar"
+          id="videoProgressBar">
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+
+    <button
+      id="generateScriptBtn"
+      class="primary"
+      disabled>
+
+      🤖 Gemini နဲ့ Script ထုတ်မယ်
+
+    </button>
+
+  </div>
+
+
+  <!-- STATUS -->
+
+  <div
+    id="status"
+    class="status">
+  </div>
+
+
+  <!-- SCRIPT -->
+
+  <div class="card">
+
+    <h2>② Myanmar Dubbing Script</h2>
+
+    <textarea
+      id="script"
+      placeholder="Gemini ထုတ်ပေးတဲ့ Script ဒီနေရာမှာ ပေါ်ပါမယ်။ ကိုယ်တိုင်လည်း ပြင်နိုင်ပါတယ်။">
+    </textarea>
+
+    <div
+      class="count"
+      id="scriptCount">
+      စာလုံးရေ — 0
+    </div>
+
+  </div>
+
+
+  <!-- VOICE -->
+
+  <div class="card">
+
+    <h2>③ Voice Settings</h2>
+
+    <div class="row">
+
+      <div>
+        <div class="small">
+          Voice
+        </div>
+
+        <select id="voice">
+
+          <option value="Thiha">
+            Thiha
+          </option>
+
+          <option value="Nilar">
+            Nilar
+          </option>
+
+        </select>
+      </div>
+
+    </div>
+
+
+    <div class="rangeRow">
+
+      <div class="rangeTitle">
+
+        <span>
+          Speed
+        </span>
+
+        <span
+          class="value"
+          id="speedValue">
+          0%
+        </span>
+
+      </div>
+
+      <input
+        id="speed"
+        type="range"
+        min="-100"
+        max="100"
+        value="0">
+
+    </div>
+
+
+    <div class="rangeRow">
+
+      <div class="rangeTitle">
+
+        <span>
+          Pitch
+        </span>
+
+        <span
+          class="value"
+          id="pitchValue">
+          0%
+        </span>
+
+      </div>
+
+      <input
+        id="pitch"
+        type="range"
+        min="-100"
+        max="100"
+        value="0">
+
+    </div>
+
+    <br>
+
+    <button
+      id="ttsBtn"
+      class="primary"
+      disabled>
+
+      🔊 Generate MP3
+
+    </button>
+
+    <div
+      class="progressBox"
+      id="ttsProgressBox">
+
+      <div
+        class="progressText"
+        id="ttsProgressText">
+        Voice ထုတ်နေပါတယ်...
+      </div>
+
+      <div class="progress">
+        <div
+          class="progressBar"
+          id="ttsProgressBar">
+        </div>
+      </div>
+
+    </div>
+
+    <audio
+      id="audioPlayer"
+      controls>
+    </audio>
+
+  </div>
+
+
+  <!-- DOWNLOAD -->
+
+  <div
+    class="card"
+    id="downloadCard">
+
+    <h2>④ Download</h2>
+
+    <div
+      class="downloads"
+      id="downloads">
+
+      <a
+        id="mp3Download"
+        href="#"
+        download="myanmar-dubbing.mp3">
+
+        🎵 Download MP3
+
+      </a>
+
+      <a
+        id="srtDownload"
+        href="#"
+        download="myanmar-dubbing.srt">
+
+        📝 Download SRT
+
+      </a>
+
+    </div>
+
+    <p class="small">
+      SRT timing ကို MP3 duration နဲ့ script အရှည်အပေါ်
+      အခြေခံပြီး browser က အလိုအလျောက်တွက်ပေးပါတယ်။
+    </p>
+
+  </div>
+
 </div>
+
+
 <script>
-(function(){"use strict";
-const WORKER="https://myanmar-tts.thetphyo77790.workers.dev";
-const fileInput=document.getElementById("txtFile"),fileName=document.getElementById("fileName"),recapButton=document.getElementById("recapButton"),scriptBox=document.getElementById("recapScript"),voiceSelect=document.getElementById("voiceSelect"),speed=document.getElementById("speedRange"),speedValue=document.getElementById("speedValue"),pitch=document.getElementById("pitchRange"),pitchValue=document.getElementById("pitchValue"),voiceButton=document.getElementById("voiceButton"),statusBox=document.getElementById("status"),player=document.getElementById("audioPlayer"),downloads=document.getElementById("downloads"),mp3Download=document.getElementById("mp3Download"),srtDownload=document.getElementById("srtDownload"),progressBox=document.getElementById("progressBox"),progressTitle=document.getElementById("progressTitle"),progressPercent=document.getElementById("progressPercent"),progressBar=document.getElementById("progressBar"),progressText=document.getElementById("progressText");
-let sourceText="",audioUrl="",srtUrl="",progressTimer=null;
-function status(t){statusBox.textContent=t}function busy(b,on,label){b.disabled=on;b.textContent=on?"လုပ်ဆောင်နေပါသည်...":label}function sliders(){speedValue.textContent=speed.value+"%";pitchValue.textContent=pitch.value+"%"}speed.addEventListener("input",sliders);pitch.addEventListener("input",sliders);sliders();
-function stop(){if(progressTimer){clearInterval(progressTimer);progressTimer=null}}function showProgress(title,text,value){progressBox.style.display="block";progressTitle.textContent=title;progressText.textContent=text;const v=Math.max(0,Math.min(100,Number(value)||0));progressPercent.textContent=Math.round(v)+"%";progressBar.style.width=v+"%"}function startProgress(title,msgs,start,max){stop();let v=start,i=0;showProgress(title,msgs[0],v);progressTimer=setInterval(()=>{if(v<max){v=Math.min(max,v+Math.random()*2.2+.5);if(v>start+(max-start)*.18)i=Math.max(i,1);if(v>start+(max-start)*.38)i=Math.max(i,2);if(v>start+(max-start)*.58)i=Math.max(i,3);if(v>start+(max-start)*.78)i=Math.max(i,4);if(v>start+(max-start)*.92)i=msgs.length-1;showProgress(title,msgs[i],v)}},700)}
-function revoke(){if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=""}if(srtUrl){URL.revokeObjectURL(srtUrl);srtUrl=""}}
-fileInput.addEventListener("change",async()=>{const f=fileInput.files[0];if(!f)return;try{sourceText=await f.text();fileName.textContent=f.name+" ("+sourceText.length.toLocaleString()+" characters)";status(sourceText.trim()?"TXT ဖိုင်ဖတ်ပြီးပါပြီ။ Generate Long Form Recap ကိုနှိပ်ပါ။":"TXT ဖိုင်ထဲမှာ စာမရှိပါ။")}catch(e){sourceText="";status("TXT ဖိုင်ဖတ်မရပါ။\n"+e.message)}});
-recapButton.addEventListener("click",async()=>{if(!sourceText.trim()&&fileInput.files[0])try{sourceText=await fileInput.files[0].text()}catch(e){}if(!sourceText.trim()){status("အရင်ဆုံး TXT ဖိုင်တစ်ခုရွေးပါ။");return}busy(recapButton,true,"Generate Long Form Recap");scriptBox.value="";try{startProgress("Generating Myanmar Script",["TXT ဖိုင်ကို ဖတ်နေပါသည်...","ဇာတ်လမ်းတစ်ခုလုံးကို နားလည်နေပါသည်...","Character နှင့် Story ကို ချိတ်ဆက်နေပါသည်...","Myanmar dubbing script ရေးနေပါသည်...","Dialogue နှင့် Emotion တွေကို ပြန်လည်ပြင်ဆင်နေပါသည်...","Script ကို အပြီးသတ်နေပါသည်..."],5,92);status("Gemini က TXT ဖိုင်တစ်ခုလုံးကို ဖတ်ပြီး Long Form Myanmar Dubbing Script ရေးနေပါသည်...\n\nစာအရှည်ပေါ်မူတည်ပြီး အချိန်အနည်းငယ် ကြာနိုင်ပါတယ်။");const r=await fetch(WORKER+"/recap",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:sourceText})});const type=r.headers.get("content-type")||"";if(!type.includes("application/json"))throw new Error(await r.text());const d=await r.json();if(!r.ok||!d.success)throw new Error(d.error||("HTTP "+r.status));stop();scriptBox.value=d.text||"";showProgress("Generating Myanmar Script","Script အပြီးသတ်ပါပြီ။",100);status("Recap Script ပြီးပါပြီ။\nလိုအပ်ရင် Script ကိုပြင်ပြီး Generate Voice + SRT ကိုနှိပ်ပါ။");scriptBox.focus()}catch(e){stop();showProgress("Recap Error","Script ထုတ်မရပါ။",0);status("Recap Error\n\n"+e.message)}finally{busy(recapButton,false,"Generate Long Form Recap")}});
-function splitSubtitleText(text){
-  /* Myanmar-safe SRT splitting: never split a Unicode grapheme cluster. */
-  const n=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/[ \t]+/g,' ').trim();
-  if(!n)return[];
 
-  const seg=(typeof Intl!=='undefined' && Intl.Segmenter)
-    ? new Intl.Segmenter('my',{granularity:'grapheme'}) : null;
+/* =========================================================
+   CONFIG
+========================================================= */
 
-  function gs(s){
-    if(seg)return Array.from(seg.segment(s),x=>x.segment);
-    return Array.from(s).reduce((a,ch)=>{
-      if(/\p{M}/u.test(ch)&&a.length)a[a.length-1]+=ch;
-      else a.push(ch);
-      return a;
-    },[]);
+const WORKER_URL =
+  "https://myanmar-tts.thetphyo77790.workers.dev";
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const videoInput =
+  document.getElementById(
+    "videoInput"
+  );
+
+const videoInfo =
+  document.getElementById(
+    "videoInfo"
+  );
+
+const generateScriptBtn =
+  document.getElementById(
+    "generateScriptBtn"
+  );
+
+const script =
+  document.getElementById(
+    "script"
+  );
+
+const scriptCount =
+  document.getElementById(
+    "scriptCount"
+  );
+
+const voice =
+  document.getElementById(
+    "voice"
+  );
+
+const speed =
+  document.getElementById(
+    "speed"
+  );
+
+const pitch =
+  document.getElementById(
+    "pitch"
+  );
+
+const speedValue =
+  document.getElementById(
+    "speedValue"
+  );
+
+const pitchValue =
+  document.getElementById(
+    "pitchValue"
+  );
+
+const ttsBtn =
+  document.getElementById(
+    "ttsBtn"
+  );
+
+const statusBox =
+  document.getElementById(
+    "status"
+  );
+
+const videoProgressBox =
+  document.getElementById(
+    "videoProgressBox"
+  );
+
+const videoProgressBar =
+  document.getElementById(
+    "videoProgressBar"
+  );
+
+const videoProgressText =
+  document.getElementById(
+    "videoProgressText"
+  );
+
+const ttsProgressBox =
+  document.getElementById(
+    "ttsProgressBox"
+  );
+
+const ttsProgressBar =
+  document.getElementById(
+    "ttsProgressBar"
+  );
+
+const ttsProgressText =
+  document.getElementById(
+    "ttsProgressText"
+  );
+
+const audioPlayer =
+  document.getElementById(
+    "audioPlayer"
+  );
+
+const downloads =
+  document.getElementById(
+    "downloads"
+  );
+
+const mp3Download =
+  document.getElementById(
+    "mp3Download"
+  );
+
+const srtDownload =
+  document.getElementById(
+    "srtDownload"
+  );
+
+
+/* =========================================================
+   CURRENT DATA
+========================================================= */
+
+let selectedVideo =
+  null;
+
+let currentAudioBlob =
+  null;
+
+let currentAudioUrl =
+  null;
+
+let currentSrtBlob =
+  null;
+
+let currentSrtUrl =
+  null;
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function showStatus(
+  message,
+  type = "info"
+) {
+
+  statusBox.textContent =
+    message;
+
+  statusBox.className =
+    "status " + type;
+}
+
+
+/* =========================================================
+   FORMAT SIZE
+========================================================= */
+
+function formatBytes(
+  bytes
+) {
+
+  if (!bytes) {
+    return "0 B";
   }
 
-  function splitLong(s,max){
-    const g=gs(s);
-    if(g.length<=max)return[s];
-    const out=[]; let pos=0;
-    while(pos<g.length){
-      let end=Math.min(pos+max,g.length);
-      if(end<g.length){
-        for(let i=end;i>pos+25;i--){
-          if(g[i-1]===' '||g[i-1]==='၊'){end=i;break;}
-        }
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB"
+  ];
+
+  const i =
+    Math.floor(
+      Math.log(bytes) /
+      Math.log(1024)
+    );
+
+  return (
+    (bytes /
+      Math.pow(
+        1024,
+        i
+      )).toFixed(2) +
+    " " +
+    units[i]
+  );
+}
+
+
+/* =========================================================
+   VIDEO SELECT
+========================================================= */
+
+videoInput.addEventListener(
+  "change",
+  () => {
+
+    selectedVideo =
+      videoInput.files[0] ||
+      null;
+
+    if (!selectedVideo) {
+
+      videoInfo.style.display =
+        "none";
+
+      generateScriptBtn.disabled =
+        true;
+
+      return;
+    }
+
+    videoInfo.style.display =
+      "block";
+
+    videoInfo.innerHTML = `
+      <b>File:</b>
+      ${escapeHtml(selectedVideo.name)}
+      <br>
+      <b>Size:</b>
+      ${formatBytes(selectedVideo.size)}
+      <br>
+      <b>Type:</b>
+      ${escapeHtml(selectedVideo.type || "video")}
+    `;
+
+    generateScriptBtn.disabled =
+      false;
+
+    showStatus(
+      "Video ရွေးပြီးပါပြီ။ Gemini နဲ့ Script ထုတ်နိုင်ပါပြီ။",
+      "info"
+    );
+  }
+);
+
+
+/* =========================================================
+   GENERATE SCRIPT
+========================================================= */
+
+generateScriptBtn.addEventListener(
+  "click",
+  async () => {
+
+    if (!selectedVideo) {
+
+      showStatus(
+        "Video အရင်ရွေးပါ။",
+        "error"
+      );
+
+      return;
+    }
+
+    generateScriptBtn.disabled =
+      true;
+
+    ttsBtn.disabled =
+      true;
+
+    videoProgressBox.style.display =
+      "block";
+
+    videoProgressBar.style.width =
+      "5%";
+
+    videoProgressText.textContent =
+      "Video ကို Gemini ဆီ ပို့နေပါတယ်...";
+
+    showStatus(
+      "Video upload လုပ်နေပါတယ်။ Video ကြီးရင် အချိန်ယူနိုင်ပါတယ်။",
+      "info"
+    );
+
+    try {
+
+      const form =
+        new FormData();
+
+      form.append(
+        "video",
+        selectedVideo
+      );
+
+
+      /*
+       * XMLHttpRequest သုံးထားတာက
+       * upload progress ကို ဖုန်းမှာ
+       * ပြနိုင်အောင်ပါ။
+       */
+
+      const data =
+        await uploadVideo(form);
+
+
+      videoProgressBar.style.width =
+        "100%";
+
+      videoProgressText.textContent =
+        "Gemini က Script ရေးပြီးပါပြီ။";
+
+      script.value =
+        data.text || "";
+
+      updateScriptCount();
+
+      ttsBtn.disabled =
+        !script.value.trim();
+
+      showStatus(
+        "✅ Script အောင်မြင်စွာ ရပါပြီ။ လိုအပ်ရင် စာကိုပြင်ပြီး Voice ထုတ်နိုင်ပါတယ်။",
+        "success"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      showStatus(
+        "❌ " +
+        (error.message ||
+          "Script ထုတ်ရာမှာ အမှားဖြစ်ပါတယ်။"),
+        "error"
+      );
+
+    } finally {
+
+      generateScriptBtn.disabled =
+        false;
+
+      setTimeout(
+        () => {
+          videoProgressBox.style.display =
+            "none";
+        },
+        1200
+      );
+    }
+  }
+);
+
+
+/* =========================================================
+   XHR VIDEO UPLOAD
+========================================================= */
+
+function uploadVideo(
+  form
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const xhr =
+        new XMLHttpRequest();
+
+      xhr.open(
+        "POST",
+        WORKER_URL +
+          "/video"
+      );
+
+      xhr.responseType =
+        "json";
+
+
+      xhr.upload.onprogress =
+        event => {
+
+          if (
+            event.lengthComputable
+          ) {
+
+            const percent =
+              Math.round(
+                (
+                  event.loaded /
+                  event.total
+                ) * 80
+              );
+
+            videoProgressBar.style.width =
+              percent + "%";
+
+            videoProgressText.textContent =
+              `Video upload ${percent}%`;
+          }
+        };
+
+
+      xhr.onload =
+        () => {
+
+          let data =
+            xhr.response;
+
+          if (
+            !data &&
+            xhr.responseText
+          ) {
+
+            try {
+              data =
+                JSON.parse(
+                  xhr.responseText
+                );
+            } catch {}
+          }
+
+          if (
+            xhr.status >= 200 &&
+            xhr.status < 300 &&
+            data?.success
+          ) {
+
+            videoProgressBar.style.width =
+              "90%";
+
+            videoProgressText.textContent =
+              "Gemini video analysis လုပ်နေပါတယ်...";
+
+            resolve(data);
+
+          } else {
+
+            reject(
+              new Error(
+                data?.error ||
+                `Server error ${xhr.status}`
+              )
+            );
+          }
+        };
+
+
+      xhr.onerror =
+        () => {
+
+          reject(
+            new Error(
+              "Network error ဖြစ်နေပါတယ်။ Internet connection စစ်ပါ။"
+            )
+          );
+        };
+
+
+      xhr.send(form);
+    }
+  );
+}
+
+
+/* =========================================================
+   SCRIPT COUNT
+========================================================= */
+
+script.addEventListener(
+  "input",
+  updateScriptCount
+);
+
+function updateScriptCount() {
+
+  const text =
+    script.value || "";
+
+  scriptCount.textContent =
+    "စာလုံးရေ — " +
+    text.length
+      .toLocaleString();
+}
+
+
+/* =========================================================
+   SPEED
+========================================================= */
+
+speed.addEventListener(
+  "input",
+  () => {
+
+    const value =
+      Number(speed.value);
+
+    speedValue.textContent =
+      value > 0
+        ? "+" + value + "%"
+        : value + "%";
+  }
+);
+
+
+/* =========================================================
+   PITCH
+========================================================= */
+
+pitch.addEventListener(
+  "input",
+  () => {
+
+    const value =
+      Number(pitch.value);
+
+    pitchValue.textContent =
+      value > 0
+        ? "+" + value + "%"
+        : value + "%";
+  }
+);
+
+
+/* =========================================================
+   TTS
+========================================================= */
+
+ttsBtn.addEventListener(
+  "click",
+  async () => {
+
+    const text =
+      script.value.trim();
+
+    if (!text) {
+
+      showStatus(
+        "Script မရှိသေးပါ။",
+        "error"
+      );
+
+      return;
+    }
+
+    ttsBtn.disabled =
+      true;
+
+    ttsProgressBox.style.display =
+      "block";
+
+    ttsProgressBar.style.width =
+      "10%";
+
+    ttsProgressText.textContent =
+      "Microsoft Voice ထုတ်နေပါတယ်...";
+
+    showStatus(
+      "Voice generate လုပ်နေပါတယ်။ Script ရှည်ရင် အချိန်ယူနိုင်ပါတယ်။",
+      "info"
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          WORKER_URL +
+            "/tts",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+                text,
+
+                voice:
+                  voice.value,
+
+                speed:
+                  Number(
+                    speed.value
+                  ),
+
+                pitch:
+                  Number(
+                    pitch.value
+                  )
+              })
+          }
+        );
+
+
+      ttsProgressBar.style.width =
+        "70%";
+
+
+      const contentType =
+        response.headers
+          .get(
+            "content-type"
+          ) || "";
+
+
+      if (
+        !response.ok ||
+        !contentType.includes(
+          "audio"
+        )
+      ) {
+
+        let message =
+          `TTS error ${response.status}`;
+
+        try {
+
+          const data =
+            await response.json();
+
+          message =
+            data.error ||
+            message;
+
+        } catch {}
+
+        throw new Error(
+          message
+        );
       }
-      out.push(g.slice(pos,end).join('').trim());
-      pos=end;
-      while(pos<g.length&&g[pos]===' ')pos++;
+
+
+      const blob =
+        await response.blob();
+
+
+      currentAudioBlob =
+        blob;
+
+
+      if (currentAudioUrl) {
+        URL.revokeObjectURL(
+          currentAudioUrl
+        );
+      }
+
+
+      currentAudioUrl =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      audioPlayer.src =
+        currentAudioUrl;
+
+      audioPlayer.style.display =
+        "block";
+
+
+      mp3Download.href =
+        currentAudioUrl;
+
+
+      /*
+       * MP3 duration ရလာတဲ့အခါ
+       * SRT ထုတ်မယ်
+       */
+
+      await createSrtFromAudio(
+        blob,
+        text
+      );
+
+
+      downloads.style.display =
+        "flex";
+
+
+      ttsProgressBar.style.width =
+        "100%";
+
+      ttsProgressText.textContent =
+        "MP3 နဲ့ SRT အဆင်သင့်ဖြစ်ပါပြီ။";
+
+
+      showStatus(
+        "✅ Voice အောင်မြင်ပါတယ်။ MP3 နဲ့ SRT ကို Download လုပ်နိုင်ပါပြီ။",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showStatus(
+        "❌ " +
+        (
+          error.message ||
+          "TTS မအောင်မြင်ပါ။"
+        ),
+        "error"
+      );
+
+    } finally {
+
+      ttsBtn.disabled =
+        false;
+
+      setTimeout(
+        () => {
+          ttsProgressBox.style.display =
+            "none";
+        },
+        1200
+      );
     }
-    return out.filter(Boolean);
+  }
+);
+
+
+/* =========================================================
+   CREATE SRT
+========================================================= */
+
+async function createSrtFromAudio(
+  blob,
+  text
+) {
+
+  const duration =
+    await getAudioDuration(
+      blob
+    );
+
+
+  const pieces =
+    splitForSrt(
+      text
+    );
+
+
+  if (
+    pieces.length === 0
+  ) {
+    return;
   }
 
-  /* Only real sentence endings create primary subtitle boundaries. */
-  const sentences=[]; let cur='';
-  for(const ch of n){
-    cur+=ch;
-    if(ch==='။'||ch==='!'||ch==='?'||ch==='\n'){
-      if(cur.trim()){sentences.push(cur.trim());cur='';}
-    }
-  }
-  if(cur.trim())sentences.push(cur.trim());
 
-  const result=[]; let buffer='';
-  for(const sentence of sentences){
-    for(const piece of splitLong(sentence,90)){
-      if(!buffer){buffer=piece;continue;}
-      const combined=buffer+' '+piece;
-      if(gs(combined).length<=90&&!/[။!?]$/.test(buffer)) buffer=combined;
-      else {result.push(buffer.trim());buffer=piece;}
+  /*
+   * Myanmar စာကို အပိုင်းလိုက်ခွဲပြီး
+   * character weight နဲ့ duration ခွဲပေးတယ်။
+   */
+
+  let totalWeight = 0;
+
+  for (
+    const piece of pieces
+  ) {
+
+    piece.weight =
+      getTextWeight(
+        piece.text
+      );
+
+    totalWeight +=
+      piece.weight;
+  }
+
+
+  let current =
+    0;
+
+  const lines = [];
+
+
+  for (
+    let i = 0;
+    i < pieces.length;
+    i++
+  ) {
+
+    const piece =
+      pieces[i];
+
+
+    const partDuration =
+      duration *
+      (
+        piece.weight /
+        totalWeight
+      );
+
+
+    const start =
+      current;
+
+
+    const end =
+      Math.min(
+        duration,
+        current +
+        partDuration
+      );
+
+
+    lines.push(
+      String(i + 1)
+    );
+
+    lines.push(
+      formatSrtTime(
+        start
+      ) +
+      " --> " +
+      formatSrtTime(
+        end
+      )
+    );
+
+    lines.push(
+      piece.text
+    );
+
+    lines.push("");
+
+
+    current =
+      end;
+  }
+
+
+  const srt =
+    lines.join("\r\n");
+
+
+  currentSrtBlob =
+    new Blob(
+      [srt],
+      {
+        type:
+          "application/x-subrip;charset=utf-8"
+      }
+    );
+
+
+  if (currentSrtUrl) {
+    URL.revokeObjectURL(
+      currentSrtUrl
+    );
+  }
+
+
+  currentSrtUrl =
+    URL.createObjectURL(
+      currentSrtBlob
+    );
+
+
+  srtDownload.href =
+    currentSrtUrl;
+}
+
+
+/* =========================================================
+   AUDIO DURATION
+========================================================= */
+
+function getAudioDuration(
+  blob
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+      const audio =
+        document.createElement(
+          "audio"
+        );
+
+      audio.preload =
+        "metadata";
+
+      audio.onloadedmetadata =
+        () => {
+
+          const duration =
+            audio.duration;
+
+          URL.revokeObjectURL(
+            url
+          );
+
+          resolve(
+            Number.isFinite(
+              duration
+            )
+              ? duration
+              : 1
+          );
+        };
+
+      audio.onerror =
+        () => {
+
+          URL.revokeObjectURL(
+            url
+          );
+
+          reject(
+            new Error(
+              "MP3 duration မဖတ်နိုင်ပါ။"
+            )
+          );
+        };
+
+      audio.src =
+        url;
+    }
+  );
+}
+
+
+/* =========================================================
+   SRT TEXT SPLITTER
+========================================================= */
+
+function splitForSrt(
+  text
+) {
+
+  text =
+    text
+      .replace(
+        /\r\n/g,
+        "\n"
+      )
+      .trim();
+
+
+  if (!text) {
+    return [];
+  }
+
+
+  const sentences = [];
+
+
+  /*
+   * အရင်ဆုံး Myanmar sentence
+   * အဆုံးတွေကို ဦးစားပေးခွဲတယ်။
+   */
+
+  const matches =
+    text.match(
+      /[^။!?\n]+[။!?\n]*/gu
+    );
+
+
+  if (matches) {
+
+    for (
+      const item of matches
+    ) {
+
+      const clean =
+        item.trim();
+
+      if (clean) {
+        sentences.push(
+          clean
+        );
+      }
     }
   }
-  if(buffer.trim())result.push(buffer.trim());
+
+
+  if (
+    sentences.length === 0
+  ) {
+
+    sentences.push(
+      text
+    );
+  }
+
+
+  const result = [];
+
+
+  /*
+   * Subtitle တစ်ကြောင်းအရမ်းရှည်ရင်
+   * 80-100 characters ဝန်းကျင်နဲ့
+   * ထပ်ခွဲတယ်။
+   */
+
+  for (
+    const sentence of sentences
+  ) {
+
+    if (
+      sentence.length <= 100
+    ) {
+
+      result.push({
+        text: sentence
+      });
+
+      continue;
+    }
+
+
+    let remaining =
+      sentence;
+
+
+    while (
+      remaining.length > 100
+    ) {
+
+      let cut =
+        remaining.lastIndexOf(
+          "၊",
+          100
+        );
+
+
+      if (
+        cut < 35
+      ) {
+
+        cut =
+          remaining.lastIndexOf(
+            " ",
+            100
+          );
+      }
+
+
+      if (
+        cut < 35
+      ) {
+        cut = 100;
+      }
+
+
+      const piece =
+        remaining
+          .slice(0, cut + 1)
+          .trim();
+
+
+      if (piece) {
+
+        result.push({
+          text: piece
+        });
+      }
+
+
+      remaining =
+        remaining
+          .slice(cut + 1)
+          .trim();
+    }
+
+
+    if (remaining) {
+
+      result.push({
+        text: remaining
+      });
+    }
+  }
+
+
   return result;
 }
-function fmt(sec){const ms=Math.max(0,Math.round(sec*1000)),h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000),x=ms%1000;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+","+String(x).padStart(3,"0")}
-function makeSrt(text,duration){const parts=splitSubtitleText(text);if(!parts.length||!duration)return"";const w=parts.map(p=>Math.max(1,p.replace(/\s/g,"").length)),total=w.reduce((a,b)=>a+b,0);let cur=0,out=[];for(let i=0;i<parts.length;i++){const len=duration*w[i]/total,start=cur,end=i===parts.length-1?duration:Math.min(duration,cur+len);out.push((i+1)+"\n"+fmt(start)+" --> "+fmt(end)+"\n"+parts[i]+"\n");cur=end}return out.join("\n")}
-voiceButton.addEventListener("click",async()=>{const text=scriptBox.value.trim();if(!text){status("Myanmar Recap Script မရှိသေးပါ။ အရင် Generate Long Form Recap လုပ်ပါ။");return}busy(voiceButton,true,"Generate Voice + SRT");revoke();player.pause();player.removeAttribute("src");player.load();player.classList.add("hide");downloads.classList.add("hide");try{startProgress("Generating Myanmar Voice",["Script ကို Voice အတွက် ပြင်ဆင်နေပါသည်...","Microsoft Myanmar Voice ကို ဆက်သွယ်နေပါသည်...","Voice audio ကို ထုတ်နေပါသည်...","Script ရှည်လျားမှုအလိုက် Audio ကို လုပ်ဆောင်နေပါသည်...","MP3 Audio ကို ပြန်လည်ပေါင်းစပ်နေပါသည်...","MP3 နဲ့ SRT ကို အပြီးသတ်နေပါသည်..."],5,94);status("Microsoft Myanmar Voice ထုတ်နေပါသည်...\n\nပြီးသွားရင် MP3 နဲ့ SRT နှစ်ခုလုံး ရပါမယ်။");const r=await fetch(WORKER+"/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text,voice:voiceSelect.value,speed:Number(speed.value),pitch:Number(pitch.value)})});if(!r.ok){let msg="HTTP "+r.status;const type=r.headers.get("content-type")||"";if(type.includes("application/json")){const d=await r.json();msg=d.error||msg}else{const t=await r.text();if(t)msg=t}throw new Error(msg)}const blob=await r.blob();if(!blob.size)throw new Error("Audio file empty");audioUrl=URL.createObjectURL(blob);player.src=audioUrl;player.classList.remove("hide");player.load();await new Promise(resolve=>{if(player.readyState>=1){resolve();return}player.addEventListener("loadedmetadata",resolve,{once:true});setTimeout(resolve,3000)});const duration=Number(player.duration);if(!Number.isFinite(duration)||duration<=0)throw new Error("MP3 duration ကို မဖတ်နိုင်ပါ။");const srt=makeSrt(text,duration);if(!srt)throw new Error("SRT file မဖန်တီးနိုင်ပါ။");srtUrl=URL.createObjectURL(new Blob(["\uFEFF"+srt],{type:"application/x-subrip;charset=utf-8"}));mp3Download.href=audioUrl;mp3Download.download="myanmar-recap.mp3";srtDownload.href=srtUrl;srtDownload.download="myanmar-recap.srt";downloads.classList.remove("hide");stop();showProgress("Generating Myanmar Voice","MP3 + SRT အပြီးသတ်ပါပြီ။",100);status("Voice ပြီးပါပြီ။\n\nMP3 နဲ့ SRT နှစ်ခုလုံးကို အောက်ကခလုတ်တွေကနေ Download လုပ်နိုင်ပါတယ်။")}catch(e){stop();showProgress("TTS Error","Voice/SRT ထုတ်မရပါ။",0);status("TTS Error\n\n"+e.message)}finally{busy(voiceButton,false,"Generate Voice + SRT")}});
-})();
-</script></body></html>
+
+
+/* =========================================================
+   TEXT WEIGHT
+========================================================= */
+
+function getTextWeight(
+  text
+) {
+
+  let weight =
+    text.length;
+
+
+  /*
+   * Myanmar punctuation တွေကို
+   * အလွန်အမင်း weight မပေးဘူး။
+   */
+
+  weight =
+    weight -
+    (
+      text.match(
+        /[။၊,!?]/g
+      ) || []
+    ).length;
+
+
+  return Math.max(
+    1,
+    weight
+  );
+}
+
+
+/* =========================================================
+   SRT TIME
+========================================================= */
+
+function formatSrtTime(
+  seconds
+) {
+
+  if (
+    !Number.isFinite(
+      seconds
+    )
+  ) {
+    seconds = 0;
+  }
+
+
+  const totalMs =
+    Math.max(
+      0,
+      Math.round(
+        seconds * 1000
+      )
+    );
+
+
+  const ms =
+    totalMs % 1000;
+
+
+  const totalSeconds =
+    Math.floor(
+      totalMs / 1000
+    );
+
+
+  const s =
+    totalSeconds % 60;
+
+
+  const totalMinutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+
+  const m =
+    totalMinutes % 60;
+
+
+  const h =
+    Math.floor(
+      totalMinutes / 60
+    );
+
+
+  return (
+    String(h).padStart(2, "0") +
+    ":" +
+    String(m).padStart(2, "0") +
+    ":" +
+    String(s).padStart(2, "0") +
+    "," +
+    String(ms).padStart(3, "0")
+  );
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+
+/* =========================================================
+   INITIAL
+========================================================= */
+
+updateScriptCount();
+
+</script>
+
+</body>
+</html>
